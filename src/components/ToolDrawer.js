@@ -6,8 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ToolGroup from './ToolGroup';
-
-const drawerWidth = 240;
+import { drawerWidth } from '../App.js';
 
 const useStyles = makeStyles((theme) => ({
     drawer: {
@@ -77,7 +76,7 @@ export default function ToolDrawer(props) {
                     {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                 </IconButton>
             </div>
-            <ToolGroup />
+            <ToolGroup setViewport={props.setViewport} />
         </Drawer>
 
     );

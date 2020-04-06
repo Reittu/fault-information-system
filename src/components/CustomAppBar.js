@@ -3,13 +3,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
-
-const drawerWidth = 240;
+import AutosuggestWrapper from './AutosuggestWrapper';
+import { drawerWidth } from '../App.js';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -31,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 36,
     },
     hide: {
-        display: 'none',
+        opacity: .5,
     },
     search: {
         position: 'relative',
@@ -41,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: fade(theme.palette.common.white, 0.25),
         },
         marginLeft: 0,
-        width: '100%',
         [theme.breakpoints.up('sm')]: {
             marginLeft: theme.spacing(1),
             width: 'auto',
@@ -61,7 +58,6 @@ const useStyles = makeStyles((theme) => ({
     },
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
         transition: theme.transitions.create('width'),
         width: '100%',
@@ -72,9 +68,33 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
+    searchBox: {
+        width: '300px',
+        '& .MuiFormControl-root': {
+            margin: '0 0 0 5px'
+        },
+        '& .MuiInputBase-root': {
+            paddingTop: 0,
+            paddingBottom: 0
+        },
+        '& .MuiInputLabel-outlined': {
+            padding: 0,
+            color: '#fff',
+            transform: 'translate(14px, 12px) scale(1)'
+        },
+        '& .MuiInputLabel-shrink': {
+            transform: 'translate(14px, -6px) scale(0.75)'
+        },
+        '& .MuiTextField': {
+            color: '#fff'
+        },
+        '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#fff'
+        }
+    },
     toolbar: {
         justifyContent: 'space-between'
-    }
+    },
 }));
 
 export default function SearchAppBar(props) {
@@ -91,7 +111,7 @@ export default function SearchAppBar(props) {
                 <IconButton
                     color="inherit"
                     aria-label="open drawer"
-                    onClick={props.menuClick}
+                    onClick={props.open ? props.handleDrawerClose : props.handleDrawerOpen}
                     edge="start"
                     className={clsx(classes.menuButton, {
                         [classes.hide]: props.open,
@@ -100,18 +120,8 @@ export default function SearchAppBar(props) {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap>Fault Information System</Typography>
-                <div className={classes.search}>
-                    <div className={classes.searchIcon}>
-                        <SearchIcon />
-                    </div>
-                    <InputBase
-                        placeholder="Search…"
-                        classes={{
-                            root: classes.inputRoot,
-                            input: classes.inputInput,
-                        }}
-                        inputProps={{ 'aria-label': 'search' }}
-                    />
+                <div className={classes.searchBox}>
+                    <AutosuggestWrapper viewport={props.viewport} setViewport={props.setViewport} />
                 </div>
             </Toolbar>
         </AppBar>
