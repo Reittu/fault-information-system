@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import CustomAppBar from './components/CustomAppBar';
 import ToolDrawer from './components/ToolDrawer';
 import MapGL from 'react-map-gl';
+import { useSelector, useDispatch } from 'react-redux';
+import { setViewport } from './actions';
 
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
@@ -46,39 +48,30 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const muiTheme = createMuiTheme(initialTheme);
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
-  const [viewport, setViewport] = useState({
-    longitude: 26.2,
-    latitude: 62.1,
-    zoom: 4.9,
-    bearing: 0,
-    pitch: 0
-  });
+  const viewport = useSelector(state => state.viewport);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+  const dispatch = useDispatch();
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const handleViewportChange = (val) => dispatch(setViewport(val));
+  const handleClick = (e) => console.log(e.lngLat);
 
   return (
     <ThemeProvider theme={muiTheme}>
       <div className={classes.root}>
         <CssBaseline />
-        <ToolDrawer open={open} handleDrawerClose={handleDrawerClose} setViewport={setViewport} />
-        <CustomAppBar open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} viewport={viewport} setViewport={setViewport} />
+        <ToolDrawer />
+        <CustomAppBar />
         <main className={classes.content}>
-           <MapGL
+          <MapGL
             {...viewport}
-            width="100vw"
-            height="100vh"
+            width="100%"
+            height="100%"
             mapStyle="mapbox://styles/mapbox/streets-v11"
-            onViewportChange={setViewport}
+            onViewportChange={handleViewportChange}
             mapboxApiAccessToken={MAPBOX_TOKEN}
+            onMouseDown={handleClick}
           >
-          </MapGL>      
+          </MapGL>
         </main>
       </div>
     </ThemeProvider>

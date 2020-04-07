@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography'
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -9,6 +9,9 @@ import EditLocationIcon from '@material-ui/icons/EditLocation';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MyLocationIcon from '@material-ui/icons/MyLocation';
 import NotListedLocationIcon from '@material-ui/icons/NotListedLocation';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { setTool, setViewport } from '../actions';
 
 const useStyles = makeStyles((theme) => ({
     buttonGroup: {
@@ -25,14 +28,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function ToolDrawer(props) {
+export default function ToolGroup() {
     const classes = useStyles();
+    const tool = useSelector(state => state.tool);
+    const dispatch = useDispatch();
 
-    const handleChange = (event, newAlignment) => {
-        setAlignment(newAlignment);
-    };
-
-    const [alignment, setAlignment] = useState('add');
+    const handleChange = (e, val) => dispatch(setTool(val));
 
     const centerGPS = () => {
         if (!navigator.geolocation) {
@@ -40,22 +41,21 @@ export default function ToolDrawer(props) {
         } else {
             navigator.geolocation.getCurrentPosition(pos => {
                 if (pos.coords) {
-                    props.setViewport({
+                    dispatch(setViewport({
                         longitude: pos.coords.longitude,
                         latitude: pos.coords.latitude,
-                        zoom: 17,
+                        zoom: 16,
                         bearing: 0,
                         pitch: 0
-                    })
+                    }))
                 }
             })
         }
-
     }
 
     return (
         <>
-            <ToggleButtonGroup className={classes.buttonGroup} size="small" value={alignment} exclusive onChange={handleChange}>
+            <ToggleButtonGroup className={classes.buttonGroup} size="small" value={tool} exclusive onChange={handleChange}>
                 <ToggleButton className={classes.toggleButton} value="add">
                     <AddLocationIcon className={classes.listIcon} />
                     <Typography variant="body1">Report a new fault</Typography>

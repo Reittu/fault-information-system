@@ -8,6 +8,9 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ToolGroup from './ToolGroup';
 import { drawerWidth } from '../App.js';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { closeDrawer } from '../actions';
+
 const useStyles = makeStyles((theme) => ({
     drawer: {
         width: drawerWidth,
@@ -57,26 +60,29 @@ export default function ToolDrawer(props) {
     const classes = useStyles();
     const theme = useTheme();
 
+    const drawerIsOpen = useSelector(state => state.drawerIsOpen);
+    const dispatch = useDispatch();
+
     return (
         <Drawer
             variant="permanent"
             className={clsx(classes.drawer, {
-                [classes.drawerOpen]: props.open,
-                [classes.drawerClose]: !props.open,
+                [classes.drawerOpen]: drawerIsOpen,
+                [classes.drawerClose]: !drawerIsOpen,
             })}
             classes={{
                 paper: clsx({
-                    [classes.drawerOpen]: props.open,
-                    [classes.drawerClose]: !props.open,
+                    [classes.drawerOpen]: drawerIsOpen,
+                    [classes.drawerClose]: !drawerIsOpen,
                 }),
             }}
         >
             <div className={classes.toolbar}>
-                <IconButton onClick={props.handleDrawerClose}>
+                <IconButton onClick={() => dispatch(closeDrawer())}>
                     {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                 </IconButton>
             </div>
-            <ToolGroup setViewport={props.setViewport} />
+            {React.useMemo(() => (<ToolGroup />), [])}
         </Drawer>
 
     );

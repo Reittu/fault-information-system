@@ -9,6 +9,9 @@ import clsx from 'clsx';
 import AutosuggestWrapper from './AutosuggestWrapper';
 import { drawerWidth } from '../App.js';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { openDrawer, closeDrawer } from '../actions';
+
 const useStyles = makeStyles((theme) => ({
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -97,31 +100,33 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function SearchAppBar(props) {
+export default function SearchAppBar() {
     const classes = useStyles();
+    const drawerIsOpen = useSelector(state => state.drawerIsOpen);
+    const dispatch = useDispatch();
 
     return (
         <AppBar
             position="fixed"
             className={clsx(classes.appBar, {
-                [classes.appBarShift]: props.open,
+                [classes.appBarShift]: drawerIsOpen,
             })}
         >
             <Toolbar className={classes.toolbar}>
                 <IconButton
                     color="inherit"
                     aria-label="open drawer"
-                    onClick={props.open ? props.handleDrawerClose : props.handleDrawerOpen}
+                    onClick={drawerIsOpen ? () => dispatch(closeDrawer()) : () => dispatch(openDrawer())}
                     edge="start"
                     className={clsx(classes.menuButton, {
-                        [classes.hide]: props.open,
+                        [classes.hide]: drawerIsOpen,
                     })}
                 >
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap>Fault Information System</Typography>
                 <div className={classes.searchBox}>
-                    <AutosuggestWrapper viewport={props.viewport} setViewport={props.setViewport} />
+                    <AutosuggestWrapper />
                 </div>
             </Toolbar>
         </AppBar>

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { setViewport } from '../actions';
+
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 let debounceTimer;
 
@@ -17,9 +20,12 @@ async function queryPlaces(query) {
 }
 
 function AutosuggestWrapper(props) {
-    const { viewport, setViewport } = props;
     const [suggestions, setSuggestions] = useState([]);
     const [value, setValue] = useState('');
+
+    const viewport = useSelector(state => state.viewport);
+    const dispatch = useDispatch();
+
     useEffect(() => {
         async function asyncSet() {
             setSuggestions(await getSuggestions(value));
@@ -40,17 +46,17 @@ function AutosuggestWrapper(props) {
             renderOption={option => {
                 return (
                     <div onClick={() => {
-                        setViewport({
+                        dispatch(setViewport({
                             ...viewport,
                             longitude: Number(option.center[0]),
-                            latitude: Number(option.center[1])
-                        })
+                            latitude: Number(option.center[1]),
+                            zoom: 16
+                        }))
                     }}>
                         {option.place_name}
                     </div>
                 );
             }}
-
         />
     );
 }
