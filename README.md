@@ -1,2 +1,4 @@
-# fault-information-system
- FIS made with React, AWS and Mapbox GL
+# Fault Information System
+WIP
+
+![Example image](https://github.com/Reittu/fault-information-system/blob/master/example.png "Example image")
