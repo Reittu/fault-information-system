@@ -1,4 +1,4 @@
-const toolReducer = (state = 'add', action) => {
+const toolReducer = (state = 'edit', action) => {
     switch (action.type) {
         case 'TOOL':
             return action.payload;

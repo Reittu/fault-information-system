@@ -2,8 +2,10 @@ import React from 'react';
 import CustomAppBar from './components/CustomAppBar';
 import ToolDrawer from './components/ToolDrawer';
 import MapGL from 'react-map-gl';
+import CustomMarker from './components/CustomMarker';
+import EditDialog from './components/EditDialog';
 import { useSelector, useDispatch } from 'react-redux';
-import { setViewport } from './actions';
+import { setViewport, setMarkers } from './actions';
 
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
@@ -48,12 +50,30 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const muiTheme = createMuiTheme(initialTheme);
   const classes = useStyles();
+  const markers = useSelector(state => state.markers);
   const viewport = useSelector(state => state.viewport);
-
+  const tool = useSelector(state => state.tool);
   const dispatch = useDispatch();
 
   const handleViewportChange = (val) => dispatch(setViewport(val));
-  const handleClick = (e) => console.log(e.lngLat);
+  const handleClick = (e) => {
+    if (tool === 'add') {
+      // Prioritize edit over add on existing markers
+      if (e.target.tagName !== 'DIV') return;
+      const newPoint = {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: e.lngLat
+        },
+        properties: {
+          text: "New marker",
+          description: "Placeholder description. " + e.lngLat[0] + ', ' + e.lngLat[1]
+        }
+      };
+      dispatch(setMarkers([...markers, newPoint]));
+    }
+  };
 
   return (
     <ThemeProvider theme={muiTheme}>
@@ -71,7 +91,22 @@ function App() {
             mapboxApiAccessToken={MAPBOX_TOKEN}
             onMouseDown={handleClick}
           >
+            {markers.map((p, i) => (
+              <CustomMarker
+                key={i}
+                markerIndex={i}
+                longitude={p.geometry.coordinates[0]}
+                latitude={p.geometry.coordinates[1]}
+                text={p.properties.text}
+                description={p.properties.description}
+                color="purple"
+                offsetTop={-24}
+                offsetLeft={-12}
+              />
+            ))}
+
           </MapGL>
+          <EditDialog />
         </main>
       </div>
     </ThemeProvider>

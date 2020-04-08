@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ToolGroup() {
+    console.log("Rendered");
     const classes = useStyles();
     const tool = useSelector(state => state.tool);
     const dispatch = useDispatch();
@@ -46,7 +47,7 @@ export default function ToolGroup() {
                         latitude: pos.coords.latitude,
                         zoom: 16,
                         bearing: 0,
-                        pitch: 0
+                        pitch: 0,
                     }))
                 }
             })
@@ -56,24 +57,24 @@ export default function ToolGroup() {
     return (
         <>
             <ToggleButtonGroup className={classes.buttonGroup} size="small" value={tool} exclusive onChange={handleChange}>
-                <ToggleButton className={classes.toggleButton} value="add">
+                <ToggleButton className={classes.toggleButton} value="Report new faults">
                     <AddLocationIcon className={classes.listIcon} />
                     <Typography variant="body1">Report a new fault</Typography>
                 </ToggleButton>
-                <ToggleButton className={classes.toggleButton} value="edit">
+                <ToggleButton className={classes.toggleButton} value="edit" title="Edit existing faults">
                     <EditLocationIcon className={classes.listIcon} />
                     <Typography variant="body1">Edit submitted faults</Typography>
                 </ToggleButton>
-                <ToggleButton className={classes.toggleButton} value="delete">
+                <ToggleButton className={classes.toggleButton} value="delete" title="Remove faults">
                     <DeleteIcon className={classes.listIcon} />
                     <Typography variant="body1">Delete faults</Typography>
                 </ToggleButton>
-                <ToggleButton className={classes.toggleButton} value="help">
+                <ToggleButton className={classes.toggleButton} value="help" title="How to use">
                     <NotListedLocationIcon className={classes.listIcon} />
                     <Typography variant="body1">Help</Typography>
                 </ToggleButton>
             </ToggleButtonGroup>
-            <Button className={classes.toggleButton} onClick={centerGPS}>
+            <Button className={classes.toggleButton} onClick={centerGPS} title="Center map to your location">
                 <MyLocationIcon className={classes.listIcon} />
                 <Typography variant="body1">Center to your location</Typography>
             </Button>

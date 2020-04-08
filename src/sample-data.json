@@ -1,0 +1,38 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [24.786, 60.735]
+      },
+      "properties": {
+        "text": "I live around here!",
+        "description": "Linnunradankatu, 11130 Riihimäki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.084, 37.422]
+      },
+      "properties": {
+        "text": "Googleplex",
+        "description": "Just some filler places... Google HQ"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [127.026635, 37.496867]
+      },
+      "properties": {
+        "text": "Samsung HQ",
+        "description": "Just some filler places... Samsung HQ"
+      }
+    }
+  ]
+}
