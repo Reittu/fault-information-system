@@ -9,6 +9,7 @@ function CustomMarker(props) {
     const tool = useSelector(state => state.tool);
     const markers = useSelector(state => state.markers);
     const dispatch = useDispatch();
+
     const handleClick = () => {
         if (tool === 'delete' && window.confirm('Delete this marker?')) {
             const newMarkers = markers.filter((marker, i) => i === markerIndex ? false : true);
@@ -18,6 +19,7 @@ function CustomMarker(props) {
             dispatch(openDialog());
         }
     };
+    
     return (
         <Marker latitude={latitude} longitude={longitude} offsetLeft={offsetLeft} offsetTop={offsetTop}>
             <div style={{ color, cursor: 'pointer' }} onClick={handleClick}>

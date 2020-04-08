@@ -91,7 +91,7 @@ function App() {
             mapboxApiAccessToken={MAPBOX_TOKEN}
             onMouseDown={handleClick}
           >
-            {markers.map((p, i) => (
+            {React.useCallback(markers.map((p, i) => (
               <CustomMarker
                 key={i}
                 markerIndex={i}
@@ -103,7 +103,7 @@ function App() {
                 offsetTop={-24}
                 offsetLeft={-12}
               />
-            ))}
+            )), [markers])}
 
           </MapGL>
           <EditDialog />

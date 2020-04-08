@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ToolGroup() {
-    console.log("Rendered");
     const classes = useStyles();
     const tool = useSelector(state => state.tool);
     const dispatch = useDispatch();
@@ -57,7 +56,7 @@ export default function ToolGroup() {
     return (
         <>
             <ToggleButtonGroup className={classes.buttonGroup} size="small" value={tool} exclusive onChange={handleChange}>
-                <ToggleButton className={classes.toggleButton} value="Report new faults">
+                <ToggleButton className={classes.toggleButton} value="add" title="Report new faults">
                     <AddLocationIcon className={classes.listIcon} />
                     <Typography variant="body1">Report a new fault</Typography>
                 </ToggleButton>

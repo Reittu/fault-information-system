@@ -82,7 +82,7 @@ export default function ToolDrawer(props) {
                     {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                 </IconButton>
             </div>
-            {React.useMemo(() => (<ToolGroup />), [])}
+            <ToolGroup />
         </Drawer>
 
     );
