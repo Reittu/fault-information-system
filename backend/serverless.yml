@@ -1,0 +1,49 @@
+service: fis
+app: fault-information-system
+org: reittu
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: serverlessUser
+
+environment:
+  DBUSER: ${secrets:dbuser}
+  DBPASS: ${secrets:dbpass}
+  DBSTRING: ${secrets:dbstring}
+
+functions:
+  query:
+    handler: lambdas/endpoints/query.handler
+    events:
+      - http:
+          path: reports
+          method: GET
+          integration: lambda
+
+  insert:
+    handler: lambdas/endpoints/insert.handler
+    events:
+      - http:
+          path: reports
+          method: POST
+          integration: lambda
+
+  update:
+    handler: lambdas/endpoints/update.handler
+    events:
+      - http:
+          path: reports
+          method: PUT
+          integration: lambda
+
+  delete:
+    handler: lambdas/endpoints/delete.handler
+    events:
+      - http:
+          path: reports
+          method: DELETE
+          integration: lambda
+
+plugins:
+  - serverless-offline

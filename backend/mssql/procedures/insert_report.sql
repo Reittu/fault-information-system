@@ -1,7 +1,7 @@
 CREATE PROCEDURE dbo.uspAddReport 
   @pLatitude       DECIMAL(8,6), 
   @pLongitude      DECIMAL(9,6), 
-  @pSubject        VARCHAR(100), 
+  @pSubject        VARCHAR(50), 
   @pDescription    VARCHAR(500), 
   @pCity           VARCHAR(200), 
   @pPostcode       VARCHAR(15), 
