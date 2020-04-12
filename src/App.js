@@ -3,7 +3,7 @@ import CustomAppBar from './components/CustomAppBar';
 import ToolDrawer from './components/ToolDrawer';
 import MapGL from 'react-map-gl';
 import CustomMarker from './components/CustomMarker';
-import EditDialog from './components/EditDialog';
+import CustomDialog from './components/CustomDialog';
 import { useSelector, useDispatch } from 'react-redux';
 import { setViewport, setMarkers } from './actions';
 
@@ -106,7 +106,7 @@ function App() {
             )), [markers])}
 
           </MapGL>
-          <EditDialog />
+          <CustomDialog />
         </main>
       </div>
     </ThemeProvider>

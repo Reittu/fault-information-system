@@ -68,9 +68,9 @@ export default function ToolGroup() {
                     <DeleteIcon className={classes.listIcon} />
                     <Typography variant="body1">Delete faults</Typography>
                 </ToggleButton>
-                <ToggleButton className={classes.toggleButton} value="help" title="How to use">
+                <ToggleButton className={classes.toggleButton} value="review" title="Review faults in detail">
                     <NotListedLocationIcon className={classes.listIcon} />
-                    <Typography variant="body1">Help</Typography>
+                    <Typography variant="body1">Review faults</Typography>
                 </ToggleButton>
             </ToggleButtonGroup>
             <Button className={classes.toggleButton} onClick={centerGPS} title="Center map to your location">

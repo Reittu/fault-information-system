@@ -15,7 +15,7 @@ function CustomMarker(props) {
             const newMarkers = markers.filter((marker, i) => i === markerIndex ? false : true);
             dispatch(setMarkers(newMarkers));
         } else {
-            dispatch(setDialogContent({ text, description, markerIndex }));
+            dispatch(setDialogContent({ text, description, markerIndex, latitude, longitude }));
             dispatch(openDialog());
         }
     };

@@ -9,7 +9,7 @@ export const dialogStateReducer = (state = false, action) => {
     }
 }
 
-export const dialogContentReducer = (state = { text: '', description: '', markerIndex: 0 }, action) => {
+export const dialogContentReducer = (state = { text: '', description: '', markerIndex: 0, latitude: 0, longitude: 0 }, action) => {
     switch (action.type) {
         case 'SET-DIALOG':
             return action.payload;

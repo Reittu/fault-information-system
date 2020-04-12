@@ -34,6 +34,6 @@ CREATE TABLE Report (
   id          INT IDENTITY(1,1) PRIMARY KEY,
   reporter_id INT NOT NULL FOREIGN KEY REFERENCES Reporter(id),
   location_id INT NOT NULL FOREIGN KEY REFERENCES Location(id),
-  subject     VARCHAR(100) NOT NULL,
+  subject     VARCHAR(50) NOT NULL,
   description VARCHAR(500) NOT NULL
 );
