@@ -1,6 +1,6 @@
 CREATE TABLE Country (
   id	INT IDENTITY(1,1) PRIMARY KEY,
-  name	VARCHAR(90) NOT NULL
+  name	NVARCHAR(90) NOT NULL
 );
 
 CREATE TABLE Region (
@@ -12,7 +12,7 @@ CREATE TABLE Region (
 CREATE TABLE City (
   id		INT IDENTITY(1,1) PRIMARY KEY,
   region_id	INT NOT NULL FOREIGN KEY REFERENCES Region(id),
-  name		VARCHAR(200) NOT NULL
+  name		NVARCHAR(200) NOT NULL
 );
 
 CREATE TABLE Location (
@@ -21,19 +21,19 @@ CREATE TABLE Location (
   latitude	DECIMAL(8,6) NOT NULL,
   longitude	DECIMAL(9,6) NOT NULL,
   postcode	VARCHAR(15),
-  address	VARCHAR(255)
+  address	NVARCHAR(255)
 );
 
 CREATE TABLE Reporter (
   id		INT IDENTITY(1,1) PRIMARY KEY,
   username	VARCHAR(50) NOT NULL,
-  password 	VARCHAR(50) NOT NULL
+  password 	VARCHAR(250) NOT NULL
 );
 
 CREATE TABLE Report (
   id          INT IDENTITY(1,1) PRIMARY KEY,
   reporter_id INT NOT NULL FOREIGN KEY REFERENCES Reporter(id),
   location_id INT NOT NULL FOREIGN KEY REFERENCES Location(id),
-  subject     VARCHAR(50) NOT NULL,
-  description VARCHAR(500) NOT NULL
+  subject     NVARCHAR(50) NOT NULL,
+  description NVARCHAR(500) NOT NULL
 );

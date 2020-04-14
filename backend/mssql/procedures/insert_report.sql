@@ -1,22 +1,23 @@
 CREATE PROCEDURE dbo.uspAddReport 
+  @pUserID         INT,
   @pLatitude       DECIMAL(8,6), 
   @pLongitude      DECIMAL(9,6), 
-  @pSubject        VARCHAR(50), 
-  @pDescription    VARCHAR(500), 
-  @pCity           VARCHAR(200), 
+  @pSubject        NVARCHAR(50), 
+  @pDescription    NVARCHAR(500), 
+  @pCity           NVARCHAR(200), 
   @pPostcode       VARCHAR(15), 
-  @pAddress        VARCHAR(255), 
-  @responseMessage VARCHAR(250) OUTPUT 
+  @pAddress        NVARCHAR(255), 
+  @responseMessage NVARCHAR(250) OUTPUT 
 AS 
   BEGIN 
     SET nocount ON 
-    BEGIN try 
+    BEGIN TRY 
       DECLARE @INSERTED TABLE 
                   ( 
                               id int 
                   ); 
        
-      insert INTO location 
+      INSERT INTO Location 
                   ( 
                               city_id, 
                               latitude, 
@@ -24,7 +25,7 @@ AS
                               postcode, 
                               address 
                   ) 
-                  output inserted.id 
+                  OUTPUT inserted.id 
       INTO        @inserted VALUES 
                   ( 
                   ( 
@@ -40,7 +41,7 @@ AS
                   @pAddress 
                   ); 
        
-      insert INTO report 
+      INSERT INTO Report 
                   ( 
                               reporter_id, 
                               location_id, 
@@ -49,18 +50,17 @@ AS
                   ) 
                   VALUES 
                   ( 
-                              2, 
+                              @pUserID, 
                               ( 
-                                     SELECT TOP 1 
-                                            id 
+                                     SELECT TOP 1 id 
                                      FROM   @inserted), 
                               @pSubject, 
                               @pDescription 
                   ); 
        
-      SET @responseMessage='Success'
-    END try 
-    BEGIN catch 
+      SET @responseMessage=SCOPE_IDENTITY()
+    END TRY 
+    BEGIN CATCH 
       SET @responseMessage=error_message() 
-    END catch 
+    END CATCH 
   END

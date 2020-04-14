@@ -22,4 +22,4 @@ EXEC	dbo.uspLogin
 		@pPassword = N'1234',
 		@responseMessage = @responseMessage OUTPUT
 
-SELECT	@responseMessage as N'@responseMessage'
+SELECT	@responseMessage as N'result'

@@ -4,3 +4,5 @@ EXEC dbo.uspAddUser
           @pLogin = N'Another',
           @pPassword = N'123',
           @responseMessage=@responseMessage OUTPUT
+
+SELECT	@responseMessage as N'result'

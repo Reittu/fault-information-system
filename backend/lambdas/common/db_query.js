@@ -8,10 +8,9 @@ const database = 'fis';
 const dbQuery = async (query) => {
     try {
         await sql.connect(`mssql://${username}:${password}@${connectionString}/${database}`);
-        const result = await sql.query`${query}`;
-        console.dir(result);
+        return await sql.query(query);
     } catch (err) {
-	console.log(err);
+	return err;
     }
 }
 
