@@ -26,8 +26,8 @@ CREATE TABLE Location (
 
 CREATE TABLE Reporter (
   id		INT IDENTITY(1,1) PRIMARY KEY,
-  username	VARCHAR(50) NOT NULL,
-  password 	VARCHAR(250) NOT NULL
+  username	NVARCHAR(50) NOT NULL,
+  password 	NVARCHAR(250) NOT NULL
 );
 
 CREATE TABLE Report (

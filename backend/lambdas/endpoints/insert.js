@@ -1,6 +1,6 @@
 const Responses = require('../common/API_Responses');
 const { withHooks } = require('../common/hooks');
-const { dbQuery } = require('../common/db_query');
+const { connectAndQuery, executeQuery } = require('../common/SQL');
 
 const handler = async event => {
   const { latitude, longitude, subject, description, city, postcode, address } = event.body;
@@ -20,20 +20,20 @@ const handler = async event => {
 
   // Hard coded all the custom reports to be from user "guest" (id 2) before Cognito implementation
 
-  const data = await dbQuery`
+  const data = await connectAndQuery(() => executeQuery`
   DECLARE @responseMessage NVARCHAR(250)
   EXEC dbo.uspAddReport
         @pUserID = 2,
         @pLatitude = ${latitude},
         @pLongitude = ${longitude},
-        @pSubject = N'${subject}',
-        @pDescription = N'${description}',
-        @pCity = N'${city || 'NULL'}',
-        @pPostcode = N'${postcode || 'NULL'}',
-        @pAddress = N'${address || 'NULL'}',
+        @pSubject = ${subject},
+        @pDescription = ${description},
+        @pCity = ${city},
+        @pPostcode = ${postcode},
+        @pAddress = ${address},
         @responseMessage=@responseMessage OUTPUT
   SELECT	@responseMessage as N'result'
-  `
+  `);
   return Responses._200({ message: JSON.stringify(data) });
 };
 

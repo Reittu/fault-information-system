@@ -6,9 +6,9 @@ AS
   BEGIN 
     SET nocount ON 
     BEGIN TRY 
-      IF (SELECT reporter_id FROM Report WHERE id = @pReportID) = @pUserID
+      IF (SELECT TOP 1 reporter_id FROM Report WHERE id = @pReportID) = @pUserID
       BEGIN
-        DECLARE @locationID INT = (SELECT location_id FROM Report WHERE id = @pReportID); -- Could also cascade delete
+        DECLARE @locationID INT = (SELECT TOP 1 location_id FROM Report WHERE id = @pReportID); -- Could also cascade delete
         DELETE FROM Report 
         WHERE id = @pReportID;
         DELETE 
