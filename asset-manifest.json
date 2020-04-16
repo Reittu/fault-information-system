@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/fault-information-system/static/css/main.8953568a.chunk.css",
+    "main.js": "/fault-information-system/static/js/main.e3ea1545.chunk.js",
+    "main.js.map": "/fault-information-system/static/js/main.e3ea1545.chunk.js.map",
+    "runtime-main.js": "/fault-information-system/static/js/runtime-main.059af64c.js",
+    "runtime-main.js.map": "/fault-information-system/static/js/runtime-main.059af64c.js.map",
+    "static/js/2.3c282380.chunk.js": "/fault-information-system/static/js/2.3c282380.chunk.js",
+    "static/js/2.3c282380.chunk.js.map": "/fault-information-system/static/js/2.3c282380.chunk.js.map",
+    "index.html": "/fault-information-system/index.html",
+    "precache-manifest.73a5c0c8503840c56f46627a318d49d3.js": "/fault-information-system/precache-manifest.73a5c0c8503840c56f46627a318d49d3.js",
+    "service-worker.js": "/fault-information-system/service-worker.js",
+    "static/css/main.8953568a.chunk.css.map": "/fault-information-system/static/css/main.8953568a.chunk.css.map",
+    "static/js/2.3c282380.chunk.js.LICENSE.txt": "/fault-information-system/static/js/2.3c282380.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.059af64c.js",
+    "static/js/2.3c282380.chunk.js",
+    "static/css/main.8953568a.chunk.css",
+    "static/js/main.e3ea1545.chunk.js"
+  ]
+}
