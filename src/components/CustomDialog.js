@@ -114,7 +114,7 @@ export default function CustomDialog() {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             inputProps={{ minLength: 5, maxLength: 500 }}
-                            multiline="true"
+                            multiline={true}
                             rows="2"
                             required
                         />

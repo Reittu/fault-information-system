@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/dev/reports';
+const API_URL = 'https://ey86blceac.execute-api.us-east-1.amazonaws.com/prod/reports';
 
 const fetchOptions = (bodyData, method) => ({
     method,

@@ -6,7 +6,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   profile: default
-  stage: dev
+  stage: prod
   environment:
     DBUSER: ${file(./db.env.json):DBUSER}
     DBPASS: ${file(./db.env.json):DBPASS}
@@ -21,6 +21,7 @@ functions:
           path: reports
           method: GET
           integration: lambda
+          cors: true
 
   insert:
     handler: lambdas/endpoints/insert.handler
@@ -29,6 +30,7 @@ functions:
           path: reports
           method: POST
           integration: lambda
+          cors: true
 
   update:
     handler: lambdas/endpoints/update.handler
@@ -37,6 +39,7 @@ functions:
           path: reports
           method: PUT
           integration: lambda
+          cors: true
 
   delete:
     handler: lambdas/endpoints/delete.handler
@@ -45,6 +48,4 @@ functions:
           path: reports
           method: DELETE
           integration: lambda
-
-plugins:
-  - serverless-offline
+          cors: true
