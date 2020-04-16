@@ -1,7 +1,4 @@
-import MARKERDATA from '../sample-data.json';
-const markerArray = MARKERDATA.features;
-
-const markerReducer = (state = markerArray, action) => {
+const markerReducer = (state = [], action) => {
     switch (action.type) {
         case 'SET-MARKERS':
             return action.payload;

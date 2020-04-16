@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CustomAppBar from './components/CustomAppBar';
 import ToolDrawer from './components/ToolDrawer';
 import MapGL from 'react-map-gl';
@@ -6,6 +6,7 @@ import CustomMarker from './components/CustomMarker';
 import CustomDialog from './components/CustomDialog';
 import { useSelector, useDispatch } from 'react-redux';
 import { setViewport, setMarkers } from './actions';
+import { getAllReports, reverseGeocode } from './utils/fetch';
 
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
@@ -55,23 +56,33 @@ function App() {
   const tool = useSelector(state => state.tool);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    getAllReports(reports => dispatch(setMarkers(reports)));
+  }, [dispatch]);
+
   const handleViewportChange = (val) => dispatch(setViewport(val));
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     if (tool === 'add') {
       // Prioritize edit over add on existing markers
       if (e.target.tagName !== 'DIV') return;
-      const newPoint = {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: e.lngLat
-        },
-        properties: {
-          text: "New marker",
-          description: "Placeholder description. " + e.lngLat[0] + ', ' + e.lngLat[1]
-        }
-      };
-      dispatch(setMarkers([...markers, newPoint]));
+      try {
+        const { city, address = '---', postcode = '---' } = await reverseGeocode(`https://api.mapbox.com/geocoding/v5/mapbox.places/${e.lngLat[0]},${e.lngLat[1]}.json?access_token=${MAPBOX_TOKEN}`);
+        if (!city) return;
+        const newPoint = {
+          address,
+          city,
+          description: `${address}, ${postcode}, ${city}`,
+          id: null,
+          latitude: e.lngLat[1],
+          longitude: e.lngLat[0],
+          postcode,
+          reporter: 'guest',
+          subject: 'New marker'
+        };
+        dispatch(setMarkers([...markers, newPoint]));
+      } catch (error) {
+        alert('Failed to fetch data: ' + error);
+      }
     }
   };
 
@@ -95,10 +106,12 @@ function App() {
               <CustomMarker
                 key={i}
                 markerIndex={i}
-                longitude={p.geometry.coordinates[0]}
-                latitude={p.geometry.coordinates[1]}
-                text={p.properties.text}
-                description={p.properties.description}
+                dbIndex={p.id}
+                longitude={p.longitude}
+                latitude={p.latitude}
+                text={p.subject}
+                description={p.description}
+                reporter={p.reporter}
                 color="purple"
                 offsetTop={-24}
                 offsetLeft={-12}

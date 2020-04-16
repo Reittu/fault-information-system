@@ -8,6 +8,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import { closeDialog, setMarkers } from '../actions';
+import { insertReport, updateReport } from '../utils/fetch';
 
 export default function CustomDialog() {
     const dialogIsOpen = useSelector(state => state.dialogIsOpen);
@@ -25,15 +26,34 @@ export default function CustomDialog() {
     }
     const handleClose = () => dispatch(closeDialog());
 
+    const requestSubmit = () => {
+        editForm.current.requestSubmit();
+    }
+
     const handleSubmit = e => {
         e.preventDefault();
         if (editForm.current.reportValidity()) {
-            editForm.current.requestSubmit();
-            const newMarkers = markers.map((marker, i) =>
-                (i === dialogContent.markerIndex)
-                    ? { ...marker, properties: { text: subject, description } }
-                    : marker
-            );
+            const newMarkers = markers.map((marker, i) => {
+                if (i === dialogContent.markerIndex) {
+                    const { latitude, longitude, city, postcode, address } = marker;
+                    if (marker.id) {
+                        updateReport({ id: marker.id, subject, description }, res => {
+                            const resultMessage = res.recordsets[0][0].result;
+                            if(resultMessage !== 'Success') alert('Failed to update report: ' + resultMessage);
+                        });
+                    } else {
+                        insertReport({ subject, description, latitude, longitude, city, postcode, address }, res => {
+                            let newMarkers = [...markers];
+                            newMarkers[i].id = Number(res.recordsets[0][0].result);
+                            newMarkers[i].subject = subject;
+                            newMarkers[i].description = description;
+                            dispatch(setMarkers(newMarkers));
+                        });
+                    }
+
+                    return { ...marker, subject, description };
+                } else return marker;
+            });
             dispatch(setMarkers(newMarkers));
             handleClose();
         }
@@ -90,7 +110,7 @@ export default function CustomDialog() {
                 <Button onClick={handleClose} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={handleSubmit} color="primary">
+                <Button onClick={requestSubmit} color="primary">
                     Save
                 </Button>
             </DialogActions>

@@ -11,6 +11,7 @@ environment:
   DBUSER: ${secrets:dbuser}
   DBPASS: ${secrets:dbpass}
   DBSTRING: ${secrets:dbstring}
+  DBNAME: ${secrets:dbname}
 
 functions:
   query:
