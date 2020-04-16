@@ -5,11 +5,11 @@ const { connectAndQuery, executeQuery } = require('../common/SQL');
 const handler = async event => {
   const { id, subject, description } = event.body;
   if (
-    id.length > 20 
-    || /\D/.test(id) 
-    || subject.length < 3 
-    || subject.length > 50 
-    || description.length < 5 
+    id.length > 20
+    || /\D/.test(id)
+    || subject.length < 3
+    || subject.length > 50
+    || description.length < 5
     || description.length > 500
   ) {
     return Responses._400({ message: 'Invalid parameters.' })
@@ -27,7 +27,7 @@ const handler = async event => {
       @responseMessage = @responseMessage OUTPUT
   SELECT	@responseMessage as N'result'
   `);
-  return Responses._200({ message: JSON.stringify(data) });
+  return Responses._200({ message: data });
 };
 
 exports.handler = withHooks(handler);

@@ -10,7 +10,7 @@ const handler = async event => {
   INNER JOIN Location l on l.id = location_id
   INNER JOIN City c on c.id = l.city_id;
   `);
-  return Responses._200({ message: JSON.stringify(data)});
+  return Responses._200({ message: data });
 };
 
 exports.handler = withHooks(handler);

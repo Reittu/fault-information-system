@@ -1,12 +1,12 @@
 import React from 'react';
 import { Marker } from 'react-map-gl';
-import MarkerSVG from '../svg/marker';
+import MarkerIcon from '@material-ui/icons/Room';
 import { useSelector, useDispatch } from 'react-redux';
 import { openDialog, setDialogContent, setMarkers } from '../actions';
 import { deleteReport } from '../utils/fetch';
 
 function CustomMarker(props) {
-    const { color, description, latitude, longitude, offsetLeft, offsetTop, reporter, text, markerIndex, dbIndex } = props;
+    const { description, latitude, longitude, offsetLeft, offsetTop, reporter, subject, markerIndex, dbIndex } = props;
     const tool = useSelector(state => state.tool);
     const markers = useSelector(state => state.markers);
     const dispatch = useDispatch();
@@ -33,15 +33,15 @@ function CustomMarker(props) {
             }
 
         } else {
-            dispatch(setDialogContent({ text, description, markerIndex, latitude, longitude }));
+            dispatch(setDialogContent({ subject, description, reporter, markerIndex, latitude, longitude }));
             dispatch(openDialog());
         }
     };
 
     return (
         <Marker latitude={latitude} longitude={longitude} offsetLeft={offsetLeft} offsetTop={offsetTop}>
-            <div style={{ color, cursor: 'pointer' }} onClick={handleClick}>
-                <MarkerSVG /><span>{text}</span>
+            <div style={{ alignItems: 'center', display: 'flex', fontWeight: 'bold', cursor: 'pointer' }} onClick={handleClick}>
+                <MarkerIcon /><span>{subject}</span>
             </div>
         </Marker>
     );

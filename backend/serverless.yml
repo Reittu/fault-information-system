@@ -5,13 +5,13 @@ org: reittu
 provider:
   name: aws
   runtime: nodejs12.x
-  profile: serverlessUser
-
-environment:
-  DBUSER: ${secrets:dbuser}
-  DBPASS: ${secrets:dbpass}
-  DBSTRING: ${secrets:dbstring}
-  DBNAME: ${secrets:dbname}
+  profile: default
+  stage: dev
+  environment:
+    DBUSER: ${file(./db.env.json):DBUSER}
+    DBPASS: ${file(./db.env.json):DBPASS}
+    DBSTRING: ${file(./db.env.json):DBSTRING}
+    DBNAME: ${file(./db.env.json):DBNAME}
 
 functions:
   query:

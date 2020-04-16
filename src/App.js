@@ -57,7 +57,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getAllReports(reports => dispatch(setMarkers(reports)));
+    getAllReports(reports => dispatch(setMarkers(reports.recordset)));
   }, [dispatch]);
 
   const handleViewportChange = (val) => dispatch(setViewport(val));
@@ -109,10 +109,9 @@ function App() {
                 dbIndex={p.id}
                 longitude={p.longitude}
                 latitude={p.latitude}
-                text={p.subject}
+                subject={p.subject}
                 description={p.description}
                 reporter={p.reporter}
-                color="purple"
                 offsetTop={-24}
                 offsetLeft={-12}
               />

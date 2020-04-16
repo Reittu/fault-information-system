@@ -34,7 +34,7 @@ const handler = async event => {
         @responseMessage=@responseMessage OUTPUT
   SELECT	@responseMessage as N'result'
   `);
-  return Responses._200({ message: JSON.stringify(data) });
+  return Responses._200({ message: data });
 };
 
 exports.handler = withHooks(handler);

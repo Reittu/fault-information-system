@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import { useSelector, useDispatch } from 'react-redux';
 import { closeDialog, setMarkers } from '../actions';
 import { insertReport, updateReport } from '../utils/fetch';
@@ -21,7 +22,7 @@ export default function CustomDialog() {
     const editForm = useRef(null);
 
     const handleSetup = () => {
-        setSubject(dialogContent.text);
+        setSubject(dialogContent.subject);
         setDescription(dialogContent.description);
     }
     const handleClose = () => dispatch(closeDialog());
@@ -39,7 +40,7 @@ export default function CustomDialog() {
                     if (marker.id) {
                         updateReport({ id: marker.id, subject, description }, res => {
                             const resultMessage = res.recordsets[0][0].result;
-                            if(resultMessage !== 'Success') alert('Failed to update report: ' + resultMessage);
+                            if (resultMessage !== 'Success') alert('Failed to update report: ' + resultMessage);
                         });
                     } else {
                         insertReport({ subject, description, latitude, longitude, city, postcode, address }, res => {
@@ -63,11 +64,15 @@ export default function CustomDialog() {
         <>
             <DialogTitle id="form-dialog-title">{subject}</DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                    <p>Latitude: {dialogContent.latitude}</p>
-                    <p>Longitude: {dialogContent.longitude}</p>
-                    <p>{description}</p>
-                </DialogContentText>
+                <Box color="text.secondary" pb="16px">
+                    <Box mb="16px">
+                        <Typography display="inline">Reported by: </Typography>
+                        <Typography display="inline" color="primary">{dialogContent.reporter}</Typography>
+                    </Box>
+                    <Typography>Latitude: {dialogContent.latitude}</Typography>
+                    <Typography paragraph="true">Longitude: {dialogContent.longitude}</Typography>
+                    <Typography>{description}</Typography>
+                </Box>
             </DialogContent>
         </>
     )
@@ -76,41 +81,48 @@ export default function CustomDialog() {
         <>
             <DialogTitle id="form-dialog-title">Fault Details</DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                    Set a subject text that appears in the map and a more in-depth description of the issue.
-                </DialogContentText>
+                <Box color="text.secondary" mb="16px">
+                    <Box mb="8px">
+                        <Typography color="textSecondary" display="inline">Reported by: </Typography>
+                        <Typography color="primary" display="inline">{dialogContent.reporter}</Typography>
+                    </Box>
+                    <Typography>Set a subject text that appears in the map and a more in-depth description of the issue.</Typography>
+                </Box>
                 <form ref={editForm} onSubmit={handleSubmit}>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="subject"
-                        label="Subject"
-                        type="text"
-                        fullWidth
-                        value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
-                        inputProps={{ minLength: 3, maxLength: 50 }}
-                        required
-                    />
-                    <TextField
-                        margin="dense"
-                        id="description"
-                        label="Description"
-                        type="text"
-                        fullWidth
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        inputProps={{ minLength: 5, maxLength: 500 }}
-                        required
-                    />
-                    <input type="submit" style={{ display: 'none' }} />
+                    <fieldset disabled={dialogContent.reporter !== 'guest' ? true : false} style={{ all: 'unset' }}>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="subject"
+                            label="Subject"
+                            type="text"
+                            fullWidth
+                            value={subject}
+                            onChange={(e) => setSubject(e.target.value)}
+                            inputProps={{ minLength: 3, maxLength: 50 }}
+
+                            required
+                        />
+                        <TextField
+                            margin="dense"
+                            id="description"
+                            label="Description"
+                            type="text"
+                            fullWidth
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            inputProps={{ minLength: 5, maxLength: 500 }}
+                            required
+                        />
+                        <input type="submit" style={{ display: 'none' }} />
+                    </fieldset>
                 </form>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={requestSubmit} color="primary">
+                <Button onClick={requestSubmit} color="primary" disabled={dialogContent.reporter !== 'guest' ? true : false}>
                     Save
                 </Button>
             </DialogActions>

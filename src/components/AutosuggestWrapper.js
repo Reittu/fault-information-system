@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
+import SearchIcon from '@material-ui/icons/Search';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { setViewport } from '../actions';
@@ -35,29 +36,34 @@ function AutosuggestWrapper(props) {
     }, [value]);
 
     return (
-        <Autocomplete
-            freeSolo
-            onInputChange={(event, newValue) => setValue(newValue)}
-            options={suggestions}
-            renderInput={params => (
-                <TextField {...params} label="Search for a location..." margin="normal" variant="outlined" />
-            )}
-            getOptionLabel={option => option.place_name}
-            renderOption={option => {
-                return (
-                    <div onClick={() => {
-                        dispatch(setViewport({
-                            ...viewport,
-                            longitude: Number(option.center[0]),
-                            latitude: Number(option.center[1]),
-                            zoom: 16
-                        }))
-                    }}>
-                        {option.place_name}
-                    </div>
-                );
-            }}
-        />
+        <div style={{ alignItems: 'center', display: 'flex'}}>
+            <SearchIcon />
+            <Autocomplete
+                freeSolo
+                style={{flex: 1}}
+                onInputChange={(event, newValue) => setValue(newValue)}
+                options={suggestions}
+                renderInput={params => (
+                    <TextField {...params} label="Search for a location..." margin="normal" variant="outlined" />
+                )}
+                getOptionLabel={option => option.place_name}
+                renderOption={option => {
+                    return (
+                        <div onClick={() => {
+                            dispatch(setViewport({
+                                ...viewport,
+                                longitude: Number(option.center[0]),
+                                latitude: Number(option.center[1]),
+                                zoom: 16
+                            }))
+                        }}>
+                            {option.place_name}
+                        </div>
+                    );
+                }}
+            />
+        </div>
+
     );
 }
 

@@ -6,34 +6,34 @@ const fetchOptions = (bodyData, method) => ({
         'Content-Type': 'application/json',
     },
     body: JSON.stringify(bodyData),
-})
+});
 
+const fetchBase = async (inputData, method, callback, errorHandler = error => alert(error)) => {
+    try {
+        const result = await fetch(API_URL, fetchOptions(inputData, method));
+        const json = await result.json();
+        const queryData = JSON.parse(json.body).message;
+        callback(queryData);
+    } catch (error) {
+        errorHandler('Request to server failed: ' + error);
+    }
+}
+
+// Async/await on wrapper functions not really necessary but allows easy promise chaining.
 export async function getAllReports(callback) {
-    const result = await fetch(API_URL);
-    const json = await result.json();
-    const markerData = JSON.parse(JSON.parse(json.body).message).recordset;
-    callback(markerData);
+    await fetchBase(undefined, 'GET', callback);
 }
 
 export async function insertReport(data, callback) {
-    const result = await fetch(API_URL, fetchOptions(data, 'POST'));
-    const json = await result.json();
-    const resultMessage = JSON.parse(JSON.parse(json.body).message);
-    callback(resultMessage);
+    await fetchBase(data, 'POST', callback);
 }
 
 export async function updateReport(data, callback) {
-    const result = await fetch(API_URL, fetchOptions(data, 'PUT'));
-    const json = await result.json();
-    const resultMessage = JSON.parse(JSON.parse(json.body).message);
-    callback(resultMessage);
+    await fetchBase(data, 'PUT', callback);
 }
 
 export async function deleteReport(data, callback) {
-    const result = await fetch(API_URL, fetchOptions(data, 'DELETE'));
-    const json = await result.json();
-    const resultMessage = JSON.parse(JSON.parse(json.body).message);
-    callback(resultMessage);
+    await fetchBase(data, 'DELETE', callback);
 }
 
 export async function reverseGeocode(apiQueryUrl) {
