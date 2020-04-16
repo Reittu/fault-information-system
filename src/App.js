@@ -36,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: '56px',
     overflow: 'hidden'
   },
+  addToolSelected: {
+    '&>div': {
+      cursor: 'pointer !important'
+    }
+  },
   '@media (orientation: landscape)': {
     content: {
       paddingTop: '48px'
@@ -92,7 +97,7 @@ function App() {
         <CssBaseline />
         <ToolDrawer />
         <CustomAppBar />
-        <main className={classes.content}>
+        <main className={tool === 'add' ? `${classes.content} ${classes.addToolSelected}` : classes.content }>
           <MapGL
             {...viewport}
             width="100%"
@@ -106,6 +111,9 @@ function App() {
               <CustomMarker
                 key={i}
                 markerIndex={i}
+                address={p.address}
+                city={p.city}
+                postcode={p.postcode}
                 dbIndex={p.id}
                 longitude={p.longitude}
                 latitude={p.latitude}

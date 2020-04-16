@@ -69,9 +69,12 @@ export default function CustomDialog() {
                         <Typography display="inline">Reported by: </Typography>
                         <Typography display="inline" color="primary">{dialogContent.reporter}</Typography>
                     </Box>
-                    <Typography>Latitude: {dialogContent.latitude}</Typography>
-                    <Typography paragraph="true">Longitude: {dialogContent.longitude}</Typography>
-                    <Typography>{description}</Typography>
+                    <Box mb="16px">
+                        <Typography>{dialogContent.address}, {dialogContent.postcode}, {dialogContent.city}</Typography>
+                        <Typography>Latitude: {dialogContent.latitude}</Typography>
+                        <Typography>Longitude: {dialogContent.longitude}</Typography>
+                    </Box>
+                    <Typography color="textPrimary">{description}</Typography>
                 </Box>
             </DialogContent>
         </>
@@ -100,7 +103,6 @@ export default function CustomDialog() {
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
                             inputProps={{ minLength: 3, maxLength: 50 }}
-
                             required
                         />
                         <TextField
@@ -112,6 +114,8 @@ export default function CustomDialog() {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             inputProps={{ minLength: 5, maxLength: 500 }}
+                            multiline="true"
+                            rows="2"
                             required
                         />
                         <input type="submit" style={{ display: 'none' }} />

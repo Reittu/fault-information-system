@@ -1,7 +1,7 @@
-const { useHooks, logEvent, parseEvent, handleUnexpectedError } = require('lambda-hooks');
+const { useHooks, parseEvent, handleUnexpectedError } = require('lambda-hooks');
 
 const withHooks = useHooks({
-    before: [logEvent, parseEvent],
+    before: [parseEvent],
     after: [],
     onError: [handleUnexpectedError],
 });

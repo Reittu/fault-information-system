@@ -6,7 +6,7 @@ import { openDialog, setDialogContent, setMarkers } from '../actions';
 import { deleteReport } from '../utils/fetch';
 
 function CustomMarker(props) {
-    const { description, latitude, longitude, offsetLeft, offsetTop, reporter, subject, markerIndex, dbIndex } = props;
+    const { address, city, postcode, description, latitude, longitude, offsetLeft, offsetTop, reporter, subject, markerIndex, dbIndex } = props;
     const tool = useSelector(state => state.tool);
     const markers = useSelector(state => state.markers);
     const dispatch = useDispatch();
@@ -33,7 +33,7 @@ function CustomMarker(props) {
             }
 
         } else {
-            dispatch(setDialogContent({ subject, description, reporter, markerIndex, latitude, longitude }));
+            dispatch(setDialogContent({ address, city, postcode, subject, description, reporter, markerIndex, latitude, longitude }));
             dispatch(openDialog());
         }
     };
