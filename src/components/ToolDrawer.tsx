@@ -6,10 +6,11 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ToolGroup from './ToolGroup';
-import { drawerWidth } from '../App.js';
+import { drawerWidth } from '../App';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { closeDrawer } from '../actions';
+import { RootState } from '../reducers';
 
 const useStyles = makeStyles((theme) => ({
     drawer: {
@@ -48,16 +49,16 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function ToolDrawer(props) {
+export default function ToolDrawer() {
     const classes = useStyles();
     const theme = useTheme();
 
-    const drawerIsOpen = useSelector(state => state.drawerIsOpen);
+    const drawerIsOpen = useSelector((state: RootState) => state.drawerIsOpen);
     const dispatch = useDispatch();
 
     return (
         <Drawer
-            variant="permanent"
+            variant='permanent'
             className={clsx(classes.drawer, {
                 [classes.drawerOpen]: drawerIsOpen,
                 [classes.drawerClose]: !drawerIsOpen,

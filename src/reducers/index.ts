@@ -4,21 +4,22 @@ import toolReducer from './tool';
 import markerReducer from './markers';
 import { dialogStateReducer, dialogContentReducer } from './dialog';
 
-import { combineReducers } from 'redux';
+import { combineReducers, Action } from 'redux';
 
 const allReducers = combineReducers({
-    drawerIsOpen: drawerReducer,
-    viewport: viewportReducer,
-    tool: toolReducer,
-    dialogIsOpen: dialogStateReducer,
     dialogContent: dialogContentReducer,
+    dialogIsOpen: dialogStateReducer,
+    drawerIsOpen: drawerReducer,
     markers: markerReducer,
+    tool: toolReducer,
+    viewport: viewportReducer,
 });
 
-// Required for state reset
-export const rootReducer = (state, action) => {
+export const rootReducer = (state: any, action: Action) => {
     if (action.type === 'RESET') {
         state = undefined;
     }
     return allReducers(state, action)
 }
+
+export type RootState = ReturnType<typeof rootReducer>;
