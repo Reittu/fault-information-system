@@ -1,6 +1,6 @@
-import { Tool, ToolAction } from "../types";
+import { Tool, PayloadAction } from '../types';
 
-const toolReducer = (state: Tool = 'edit', action: ToolAction): Tool => {
+const toolReducer = (state: Tool = 'edit', action: PayloadAction<Tool>): Tool => {
     switch (action.type) {
         case 'TOOL':
             return action.payload;

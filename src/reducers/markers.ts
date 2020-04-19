@@ -1,6 +1,6 @@
-import { Marker, MarkerAction } from "../types";
+import { Marker, PayloadAction } from '../types';
 
-const markerReducer = (state: Marker[] = [], action: MarkerAction): Marker[] => {
+const markerReducer = (state: Marker[] = [], action: PayloadAction<Marker[]>): Marker[] => {
     switch (action.type) {
         case 'SET-MARKERS':
             return action.payload;

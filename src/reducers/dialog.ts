@@ -1,5 +1,5 @@
-import { Action } from "redux";
-import { DialogContentAction, DialogContent } from "../types";
+import { Action } from 'redux';
+import { DialogContent, PayloadAction } from '../types';
 
 export const dialogStateReducer = (state: boolean = false, action: Action): boolean => {
   switch (action.type) {
@@ -26,7 +26,7 @@ const initialState: DialogContent = {
 
 export const dialogContentReducer = (
   state = initialState,
-  action: DialogContentAction
+  action: PayloadAction<DialogContent>
 ): DialogContent => {
   switch (action.type) {
     case 'SET-DIALOG':

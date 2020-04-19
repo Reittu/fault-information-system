@@ -1,4 +1,4 @@
-import { Viewport, ViewportAction } from "../types";
+import { Viewport, PayloadAction } from '../types';
 
 const initialState: Viewport = {
     longitude: 26.2,
@@ -8,7 +8,7 @@ const initialState: Viewport = {
     pitch: 0
 }
 
-const viewportReducer = (state: Viewport = initialState, action: ViewportAction): Viewport => {
+const viewportReducer = (state: Viewport = initialState, action: PayloadAction<Viewport>): Viewport => {
     switch (action.type) {
         case 'VIEWPORT':
             return action.payload;

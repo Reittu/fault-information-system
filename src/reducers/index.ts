@@ -15,13 +15,11 @@ const allReducers = combineReducers({
     viewport: viewportReducer,
 });
 
-// Required for state reset
-export const rootReducer = (state: CombinedState, action: Action) => {
+export const rootReducer = (state: any, action: Action) => {
     if (action.type === 'RESET') {
         state = undefined;
     }
     return allReducers(state, action)
 }
 
-type CombinedState = ReturnType<typeof allReducers>;
 export type RootState = ReturnType<typeof rootReducer>;

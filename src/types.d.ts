@@ -1,39 +1,34 @@
-import { Action } from "redux";
+import { Action } from 'redux';
+import { SyntheticEvent } from 'react';
+
+export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; 
+
+export type PayloadAction<T> = Action & {
+  payload: T
+}
 
 export type Tool = 'add' | 'edit' | 'delete' | 'review'; 
-export type ToolAction = Action & { payload: Tool };
 
-export type DialogContent = {
+export type ReportBase = {
   address: string;
   city: string;
-  postcode: string;
-  subject: string;
   description: string;
-  reporter: string;
-  markerIndex: number;
   latitude: number;
   longitude: number;
-};
-
-export type DialogContentAction = Action & {
-  payload: DialogContent
-};
-
-export type Marker = {
-    address: string,
-    city: string,
-    description: string,
-    id: number,
-    latitude: number,
-    longitude: number,
-    postcode: string,
-    reporter: string,
-    subject: string
+  postcode: string;
+  subject: string;
+  reporter?: string;
 }
 
-export type MarkerAction = Action & {
-    payload: Marker[]
+export type Marker = ReportBase & {
+  reporter: string,
+  id: number | null,
 }
+
+export type DialogContent = ReportBase & {
+  reporter: string;
+  markerIndex: number;
+};
 
 export type Viewport = {
     longitude: number,
@@ -43,6 +38,62 @@ export type Viewport = {
     pitch: number
 }
 
-export type ViewportAction = Action & {
-    payload: Viewport
+export type MapLayerEvent = SyntheticEvent & {
+  target: HTMLElement,
+  lngLat: number[],
+  features: object[]
+}
+
+export type ReportBodyInsert = ReportBase;
+
+export type ReportBodyUpdate = {
+  id: number;
+  subject: string;
+  description: string;
+};
+
+export type ReportBodyDelete = {
+  id: number,
+  userToken?: string
+}
+
+type QueryResultMessage = {
+  result: string
+}
+
+export type QueryGetResult = {
+  recordset: Marker[]
+}
+
+export type QuerySetResult = {
+  recordset: QueryResultMessage[]
+}
+
+export type GeoJSONFeature = {
+  bbox: number[],
+  center: number[],
+  context: {
+    id: string,
+    short_code: string,
+    wikidata: string,
+    text: string
+  }[],
+  geometry: {
+    coordinates: number[],
+    type: string
+  },
+  id: string,
+  place_name: string,
+  place_type: string[],
+  properties: object,
+  relevance: number,
+  text: string,
+  type: string,
+}
+
+export type GeoJSONFeatureCollection = {
+  attribution: string,
+  type: string,
+  query: number[],
+  features: GeoJSONFeature[]
 }

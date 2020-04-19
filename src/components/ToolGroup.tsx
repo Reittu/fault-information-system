@@ -12,6 +12,8 @@ import NotListedLocationIcon from '@material-ui/icons/NotListedLocation';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { setTool, setViewport } from '../actions';
+import { RootState } from '../reducers';
+import { Tool } from '../types';
 
 const useStyles = makeStyles((theme) => ({
     buttonGroup: {
@@ -30,14 +32,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ToolGroup() {
     const classes = useStyles();
-    const tool = useSelector(state => state.tool);
+    const tool = useSelector((state: RootState) => state.tool);
     const dispatch = useDispatch();
 
-    const handleChange = (e, val) => dispatch(setTool(val));
+    const handleChange = (e: any, val: Tool) => dispatch(setTool(val));
 
     const centerGPS = () => {
         if (!navigator.geolocation) {
-            alert("Your browser does not support GeoLocation.");
+            alert('Your browser does not support GeoLocation.');
         } else {
             navigator.geolocation.getCurrentPosition(pos => {
                 if (pos.coords) {
@@ -55,27 +57,27 @@ export default function ToolGroup() {
 
     return (
         <>
-            <ToggleButtonGroup className={classes.buttonGroup} size="small" value={tool} exclusive onChange={handleChange}>
-                <ToggleButton className={classes.toggleButton} value="add" title="Report new faults">
+            <ToggleButtonGroup className={classes.buttonGroup} size='small' value={tool} exclusive onChange={handleChange}>
+                <ToggleButton className={classes.toggleButton} value='add' title='Report new faults'>
                     <AddLocationIcon className={classes.listIcon} />
-                    <Typography variant="body1">Report a new fault</Typography>
+                    <Typography variant='body1'>Report a new fault</Typography>
                 </ToggleButton>
-                <ToggleButton className={classes.toggleButton} value="edit" title="Edit existing faults">
+                <ToggleButton className={classes.toggleButton} value='edit' title='Edit existing faults'>
                     <EditLocationIcon className={classes.listIcon} />
-                    <Typography variant="body1">Edit submitted faults</Typography>
+                    <Typography variant='body1'>Edit submitted faults</Typography>
                 </ToggleButton>
-                <ToggleButton className={classes.toggleButton} value="delete" title="Remove faults">
+                <ToggleButton className={classes.toggleButton} value='delete' title='Remove faults'>
                     <DeleteIcon className={classes.listIcon} />
-                    <Typography variant="body1">Delete faults</Typography>
+                    <Typography variant='body1'>Delete faults</Typography>
                 </ToggleButton>
-                <ToggleButton className={classes.toggleButton} value="review" title="Review faults in detail">
+                <ToggleButton className={classes.toggleButton} value='review' title='Review faults in detail'>
                     <NotListedLocationIcon className={classes.listIcon} />
-                    <Typography variant="body1">Review faults</Typography>
+                    <Typography variant='body1'>Review faults</Typography>
                 </ToggleButton>
             </ToggleButtonGroup>
-            <Button className={classes.toggleButton} onClick={centerGPS} title="Center map to your location">
+            <Button className={classes.toggleButton} onClick={centerGPS} title='Center map to your location'>
                 <MyLocationIcon className={classes.listIcon} />
-                <Typography variant="body1">Center to your location</Typography>
+                <Typography variant='body1'>Center to your location</Typography>
             </Button>
         </>
     );

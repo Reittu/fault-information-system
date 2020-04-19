@@ -7,10 +7,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import AutosuggestWrapper from './AutosuggestWrapper';
-import { drawerWidth } from '../App.js';
-
+import { drawerWidth } from '../App';
 import { useSelector, useDispatch } from 'react-redux';
 import { openDrawer, closeDrawer } from '../actions';
+import { RootState } from '../reducers';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -57,29 +57,29 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SearchAppBar() {
     const classes = useStyles();
-    const drawerIsOpen = useSelector(state => state.drawerIsOpen);
+    const drawerIsOpen = useSelector((state: RootState) => state.drawerIsOpen);
     const dispatch = useDispatch();
 
     return (
         <AppBar
-            position="fixed"
+            position='fixed'
             className={clsx(classes.appBar, {
                 [classes.appBarShift]: drawerIsOpen,
             })}
         >
             <Toolbar className={classes.toolbar}>
                 <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
+                    color='inherit'
+                    aria-label='open drawer'
                     onClick={drawerIsOpen ? () => dispatch(closeDrawer()) : () => dispatch(openDrawer())}
-                    edge="start"
+                    edge='start'
                     className={clsx(classes.menuButton, {
                         [classes.hide]: drawerIsOpen,
                     })}
                 >
                     <MenuIcon />
                 </IconButton>
-                <Typography variant="h6" noWrap>Fault Information System</Typography>
+                <Typography variant='h6' noWrap>Fault Information System</Typography>
                 <div className={classes.searchBox}>
                     <AutosuggestWrapper />
                 </div>
