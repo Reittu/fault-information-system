@@ -9,14 +9,19 @@ import { setViewport, setMarkers } from './actions';
 import { getAllReports, reverseGeocode } from './utils/fetch';
 
 import './App.css';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { purple, blue } from '@material-ui/core/colors';
 
-export const drawerWidth = 260;
+import { Marker } from './types';
+import { RootState } from './reducers';
 
-const initialTheme = {
+export const drawerWidth: number = 260;
+
+const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_TOKEN;
+
+const initialTheme: ThemeOptions = {
   palette: {
     primary: purple,
     secondary: blue,
@@ -24,9 +29,7 @@ const initialTheme = {
   },
 }
 
-const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
   },
@@ -40,29 +43,20 @@ const useStyles = makeStyles((theme) => ({
     '&>div': {
       cursor: 'pointer !important'
     }
-  },
-  '@media (orientation: landscape)': {
-    content: {
-      paddingTop: '48px'
-    }
-  },
-  '@media (min-width: 600px)': {
-    content: {
-      paddingTop: '64px'
-    }
   }
 }));
 
 function App() {
   const muiTheme = createMuiTheme(initialTheme);
   const classes = useStyles();
-  const markers = useSelector(state => state.markers);
-  const viewport = useSelector(state => state.viewport);
-  const tool = useSelector(state => state.tool);
+  const markers = useSelector((state: RootState) => state.markers);
+  const viewport = useSelector((state: RootState) => state.viewport);
+  const tool = useSelector((state: RootState) => state.tool);
   const dispatch = useDispatch();
 
   useEffect(() => {
     getAllReports(reports => dispatch(setMarkers(reports.recordset)));
+    return () => null; // Do nothing on unmount.
   }, [dispatch]);
 
   const handleViewportChange = (val) => dispatch(setViewport(val));
@@ -73,7 +67,7 @@ function App() {
       try {
         const { city, address = '---', postcode = '---' } = await reverseGeocode(`https://api.mapbox.com/geocoding/v5/mapbox.places/${e.lngLat[0]},${e.lngLat[1]}.json?access_token=${MAPBOX_TOKEN}`);
         if (!city) return;
-        const newPoint = {
+        const newMarker: Marker = {
           address,
           city,
           description: `${address}, ${postcode}, ${city}`,
@@ -84,7 +78,7 @@ function App() {
           reporter: 'guest',
           subject: 'New marker'
         };
-        dispatch(setMarkers([...markers, newPoint]));
+        dispatch(setMarkers([...markers, newMarker]));
       } catch (error) {
         alert('Failed to fetch data: ' + error);
       }
