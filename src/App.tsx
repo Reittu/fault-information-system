@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import CustomAppBar from './components/CustomAppBar';
 import ToolDrawer from './components/ToolDrawer';
 import MapGL from 'react-map-gl';
-import CustomMarker from './components/CustomMarker';
+import CustomAppBar from './components/CustomAppBar';
 import CustomDialog from './components/CustomDialog';
+import CustomMarker from './components/CustomMarker';
 import { useSelector, useDispatch } from 'react-redux';
 import { setViewport, setMarkers } from './actions';
 import { getAllReports, reverseGeocode } from './utils/fetch';
@@ -55,8 +55,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getAllReports((reports) => dispatch(setMarkers(reports.recordset)));
-    return () => undefined; // Do nothing on unmount.
+    getAllReports().then((reports) => dispatch(setMarkers(reports)));
   }, [dispatch]);
 
   const handleViewportChange = (viewport: Viewport) => dispatch(setViewport(viewport));
@@ -64,37 +63,34 @@ function App() {
     if (tool === 'add') {
       // Prioritize edit over add on existing markers
       if (e.target.tagName !== 'DIV') return;
-      try {
-        const { city, address = '---', postcode = '---', region, country } = await reverseGeocode(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.lngLat[0]},${e.lngLat[1]}.json?access_token=${MAPBOX_TOKEN}`
-        );
 
-        if (country !== 'Finland') {
-          return alert(
-            `This app is currently restricted to Finland only. Marker location: ${region}, ${country}`
-          );
-        }
+      reverseGeocode(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.lngLat[0]},${e.lngLat[1]}.json?access_token=${MAPBOX_TOKEN}`
+      )
+        .then((res) => {
+          const { city, address = '---', postcode = '---', region, country } = res;
+          if (country !== 'Finland')
+            return alert(
+              `This app is currently restricted to Finland only. Marker location: ${region}, ${country}`
+            );
 
-        if (!city) {
-          return alert('Marker is not located near a city with infrastructure.');
-        }
+          if (!city) return alert('Marker is not located near a city with infrastructure.');
 
-        const newMarker: Marker = {
-          address,
-          city,
-          description: `${address}, ${postcode}, ${city}`,
-          id: null,
-          latitude: e.lngLat[1],
-          longitude: e.lngLat[0],
-          postcode,
-          reporter: 'guest',
-          subject: 'New marker'
-        };
+          const newMarker: Marker = {
+            address,
+            city,
+            description: `${address}, ${postcode}, ${city}`,
+            id: null,
+            latitude: e.lngLat[1],
+            longitude: e.lngLat[0],
+            postcode,
+            reporter: 'guest',
+            subject: 'New marker'
+          };
 
-        dispatch(setMarkers([...markers, newMarker]));
-      } catch (error) {
-        alert('Failed to fetch data: ' + error.message);
-      }
+          dispatch(setMarkers([...markers, newMarker]));
+        })
+        .catch((err) => alert(err));
     }
   };
 
@@ -120,19 +116,19 @@ function App() {
           >
             {React.useMemo(
               () =>
-                markers.map((p: Marker, i: number) => (
+                markers.map((m: Marker, i: number) => (
                   <CustomMarker
                     key={i}
-                    markerIndex={i}
-                    address={p.address}
-                    city={p.city}
-                    postcode={p.postcode}
-                    dbIndex={p.id}
-                    longitude={p.longitude}
-                    latitude={p.latitude}
-                    subject={p.subject}
-                    description={p.description}
-                    reporter={p.reporter}
+                    localIndex={i}
+                    address={m.address}
+                    city={m.city}
+                    postcode={m.postcode}
+                    dbIndex={m.id}
+                    longitude={m.longitude}
+                    latitude={m.latitude}
+                    subject={m.subject}
+                    description={m.description}
+                    reporter={m.reporter}
                     offsetTop={-24}
                     offsetLeft={-12}
                   />

@@ -23,50 +23,37 @@ const fetchOptions = (
 
 const fetchBase = async (
   method: HTTPMethod,
-  inputData?: ReportBodyInsert | ReportBodyUpdate | ReportBodyDelete,
-  callback?: (result: any) => void,
-  errorHandler = (error: Error) => alert(error.message || error)
+  inputData?: ReportBodyInsert | ReportBodyUpdate | ReportBodyDelete
 ) => {
-  try {
-    const result = await fetch(API_URL, fetchOptions(method, inputData));
-    const json = await result.json();
-    const queryData = JSON.parse(json.body).message;
-    if (callback) callback(queryData);
-  } catch (error) {
-    errorHandler('Request to server failed: ' + error.message || error);
-  }
+  const result = await fetch(API_URL, fetchOptions(method, inputData));
+  const json = await result.json();
+  return JSON.parse(json.body).message;
 };
 
-// Async/await on wrapper functions not really necessary but allows easy promise chaining.
-export async function getAllReports(
-  callback?: (result: QueryGetResult) => void,
-  errorHandler?: (error: Error) => void
-) {
-  if (callback) await fetchBase('GET', undefined, callback, errorHandler);
+export async function getAllReports() {
+  const result: QueryGetResult = await fetchBase('GET');
+  return result.recordset;
 }
 
-export async function insertReport(
-  data: ReportBodyInsert,
-  callback?: (result: QuerySetResult) => void,
-  errorHandler?: (error: Error) => void
-) {
-  await fetchBase('POST', data, callback, errorHandler);
+export async function insertReport(data: ReportBodyInsert) {
+  const result: QuerySetResult = await fetchBase('POST', data);
+  if (isNaN(result.recordset[0].result as any))
+    throw Error('Failed to insert: ' + result.recordset[0].result);
+  return result.recordset[0].result;
 }
 
-export async function updateReport(
-  data: ReportBodyUpdate,
-  callback?: (result: QuerySetResult) => void,
-  errorHandler?: (error: Error) => void
-) {
-  await fetchBase('PUT', data, callback, errorHandler);
+export async function updateReport(data: ReportBodyUpdate) {
+  const result: QuerySetResult = await fetchBase('PUT', data);
+  if (result.recordset[0].result !== 'Success')
+    throw Error('Failed to update: ' + result.recordset[0].result);
+  return result.recordset[0].result;
 }
 
-export async function deleteReport(
-  data: ReportBodyDelete,
-  callback?: (result: QuerySetResult) => void,
-  errorHandler?: (error: Error) => void
-) {
-  await fetchBase('DELETE', data, callback, errorHandler);
+export async function deleteReport(data: ReportBodyDelete) {
+  const result: QuerySetResult = await fetchBase('DELETE', data);
+  if (result.recordset[0].result !== 'Success')
+    throw Error('Failed to delete: ' + result.recordset[0].result);
+  return result.recordset[0].result;
 }
 
 export async function reverseGeocode(apiQueryUrl: string) {
@@ -81,7 +68,7 @@ export async function reverseGeocode(apiQueryUrl: string) {
   const addressDataArray = json.features.filter((feature) => feature.place_type[0] === 'address');
   if (addressDataArray.length > 0) address = addressDataArray[0].place_name.split(', ')[0];
 
-  const postcodeDataArray = json.features.filter((x) => x.place_type[0] === 'postcode');
+  const postcodeDataArray = json.features.filter((feature) => feature.place_type[0] === 'postcode');
   if (postcodeDataArray.length > 0) postcode = postcodeDataArray[0].text;
 
   return { city, region, country, address, postcode };

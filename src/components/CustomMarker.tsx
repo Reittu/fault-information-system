@@ -5,9 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { openDialog, setDialogContent, setMarkers } from '../actions';
 import { deleteReport } from '../utils/fetch';
 import { RootState } from '../reducers';
-import { Marker as MarkerT } from '../types';
+import { Marker as IMarker, CustomMarkerProps } from '../types';
 
-function CustomMarker(props: any) {
+function CustomMarker(props: CustomMarkerProps) {
   const {
     address,
     city,
@@ -19,8 +19,8 @@ function CustomMarker(props: any) {
     offsetTop,
     reporter,
     subject,
-    markerIndex,
-    dbIndex
+    localIndex,
+    dbIndex = null
   } = props;
 
   const tool = useSelector((state: RootState) => state.tool);
@@ -29,36 +29,31 @@ function CustomMarker(props: any) {
 
   const handleClick = () => {
     function updateMarkersLocally() {
-      const newMarkers = markers.filter((marker: MarkerT, i: number) =>
-        i === markerIndex ? false : true
+      const newMarkers = markers.filter((marker: IMarker, i: number) =>
+        i === localIndex ? false : true
       );
       dispatch(setMarkers(newMarkers));
     }
 
     if (tool === 'delete') {
       if (!dbIndex) return updateMarkersLocally();
-      if (reporter !== 'guest')
+      if (reporter !== 'guest') // TODO: implement authentication (e.g. AWS Cognito)
         return alert('Not authorized as guest to delete a report posted by admin.');
-      if (window.confirm('Delete this marker?')) {
-        deleteReport({ id: dbIndex }, res => {
-          const resultMessage = res.recordset[0].result;
-          if (resultMessage === 'Success') {
-            updateMarkersLocally();
-          } else {
-            alert('Failed to delete this report: ' + resultMessage);
-          }
-        });
+      if (window.confirm('Delete this report?')) {
+        deleteReport({ id: dbIndex })
+          .then(() => updateMarkersLocally())
+          .catch((err) => alert(err));
       }
     } else {
       dispatch(
         setDialogContent({
-          address,
-          city,
-          postcode,
+          address: address || '---',
+          city: city || '---',
+          postcode: postcode || '---',
           subject,
           description,
           reporter,
-          markerIndex,
+          markerIndex: localIndex,
           latitude,
           longitude
         })

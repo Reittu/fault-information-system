@@ -30,60 +30,55 @@ export default function CustomDialog() {
   const handleClose = () => dispatch(closeDialog());
 
   const requestSubmit = () => {
-    editForm.current?.requestSubmit();
+    editForm.current?.requestSubmit(); // Validate form and submit
   };
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (editForm.current?.reportValidity()) {
-      const newMarkers = markers.map((marker: Marker, i: number) => {
-        if (i === dialogContent.markerIndex) {
-          const { latitude, longitude, city, postcode, address } = marker;
-          if (marker.id) {
-            updateReport({ id: marker.id, subject, description }, res => {
-              const resultMessage = res.recordset[0].result;
-              if (resultMessage !== 'Success') alert('Failed to update report: ' + resultMessage);
-            });
-          } else {
-            insertReport(
-              { subject, description, latitude, longitude, city, postcode, address },
-              res => {
-                let newMarkers = [...markers];
-                newMarkers[i].id = Number(res.recordset[0].result);
-                newMarkers[i].subject = subject;
-                newMarkers[i].description = description;
-                dispatch(setMarkers(newMarkers));
-              }
-            );
-          }
+    if (!editForm.current?.reportValidity()) return; // Not valid
 
-          return { ...marker, subject, description };
-        } else return marker;
-      });
-      dispatch(setMarkers(newMarkers));
-      handleClose();
-    }
+    const newMarkers = markers.map((marker: Marker, i: number) => {
+      // Find the marker that initiated the edit dialog
+      if (i === dialogContent.markerIndex) {
+        const { latitude, longitude, city, postcode, address, reporter, id: dbIndex } = marker;
+        if (dbIndex) { // Marker already has an associated database id: wanted action is update
+          updateReport({ id: dbIndex, subject, description }).catch(err => alert(err));
+        } else { // Marker has no existing database id: wanted action is insert
+          insertReport({ subject, description, latitude, longitude, city, postcode, address, reporter }).then(result => {
+            let newMarkers = [...markers];
+            newMarkers[i].id = Number(result);
+            newMarkers[i].subject = subject;
+            newMarkers[i].description = description;
+            dispatch(setMarkers(newMarkers));
+          }).catch(err => alert(err))
+        }
+        return { ...marker, subject, description };
+      } else return marker;
+    });
+
+    dispatch(setMarkers(newMarkers));
+    handleClose();
   };
 
   const reviewModeContent = () => (
     <>
-      <DialogTitle id='form-dialog-title'>{subject}</DialogTitle>
+      <DialogTitle id="form-dialog-title">{subject}</DialogTitle>
       <DialogContent>
-        <Box color='text.secondary' pb='16px'>
-          <Box mb='16px'>
-            <Typography display='inline'>Reported by: </Typography>
-            <Typography display='inline' color='primary'>
+        <Box color="text.secondary" pb="16px">
+          <Box mb="16px">
+            <Typography display="inline">Reported by: </Typography>
+            <Typography display="inline" color="primary">
               {dialogContent.reporter}
             </Typography>
           </Box>
-          <Box mb='16px'>
+          <Box mb="16px">
             <Typography>
               {dialogContent.address}, {dialogContent.postcode}, {dialogContent.city}
             </Typography>
             <Typography>Latitude: {dialogContent.latitude}</Typography>
             <Typography>Longitude: {dialogContent.longitude}</Typography>
           </Box>
-          <Typography color='textPrimary'>{description}</Typography>
+          <Typography color="textPrimary">{description}</Typography>
         </Box>
       </DialogContent>
     </>
@@ -91,14 +86,14 @@ export default function CustomDialog() {
 
   const nonReviewModeContent = () => (
     <>
-      <DialogTitle id='form-dialog-title'>Fault Details</DialogTitle>
+      <DialogTitle id="form-dialog-title">Fault Details</DialogTitle>
       <DialogContent>
-        <Box color='text.secondary' mb='16px'>
-          <Box mb='8px'>
-            <Typography color='textSecondary' display='inline'>
+        <Box color="text.secondary" mb="16px">
+          <Box mb="8px">
+            <Typography color="textSecondary" display="inline">
               Reported by:{' '}
             </Typography>
-            <Typography color='primary' display='inline'>
+            <Typography color="primary" display="inline">
               {dialogContent.reporter}
             </Typography>
           </Box>
@@ -113,40 +108,40 @@ export default function CustomDialog() {
           >
             <TextField
               autoFocus
-              margin='dense'
-              id='subject'
-              label='Subject'
-              type='text'
+              margin="dense"
+              id="subject"
+              label="Subject"
+              type="text"
               fullWidth
               value={subject}
-              onChange={e => setSubject(e.target.value)}
+              onChange={(e) => setSubject(e.target.value)}
               inputProps={{ minLength: 3, maxLength: 50 }}
               required
             />
             <TextField
-              margin='dense'
-              id='description'
-              label='Description'
-              type='text'
+              margin="dense"
+              id="description"
+              label="Description"
+              type="text"
               fullWidth
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               inputProps={{ minLength: 5, maxLength: 500 }}
               multiline={true}
-              rows='2'
+              rows="2"
               required
             />
-            <input type='submit' style={{ display: 'none' }} />
+            <input type="submit" style={{ display: 'none' }} />
           </fieldset>
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color='primary'>
+        <Button onClick={handleClose} color="primary">
           Cancel
         </Button>
         <Button
           onClick={requestSubmit}
-          color='primary'
+          color="primary"
           disabled={dialogContent.reporter !== 'guest' ? true : false}
         >
           Save
@@ -160,7 +155,7 @@ export default function CustomDialog() {
       onEnter={handleSetup}
       open={dialogIsOpen}
       onClose={() => handleClose()}
-      aria-labelledby='form-dialog-title'
+      aria-labelledby="form-dialog-title"
     >
       {tool === 'review' ? reviewModeContent() : nonReviewModeContent()}
     </Dialog>
