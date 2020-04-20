@@ -8,7 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import { useSelector, useDispatch } from 'react-redux';
-import { closeDialog, setMarkers } from '../actions';
+import { closeDialog, setMarkers, setSnackbar, showSpinner, hideSpinner } from '../actions';
 import { insertReport, updateReport } from '../utils/fetch';
 import { Marker } from '../types';
 import { RootState } from '../reducers';
@@ -35,22 +35,70 @@ export default function CustomDialog() {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (!editForm.current?.reportValidity()) return; // Not valid
 
     const newMarkers = markers.map((marker: Marker, i: number) => {
       // Find the marker that initiated the edit dialog
       if (i === dialogContent.markerIndex) {
         const { latitude, longitude, city, postcode, address, reporter, id: dbIndex } = marker;
-        if (dbIndex) { // Marker already has an associated database id: wanted action is update
-          updateReport({ id: dbIndex, subject, description }).catch(err => alert(err));
-        } else { // Marker has no existing database id: wanted action is insert
-          insertReport({ subject, description, latitude, longitude, city, postcode, address, reporter }).then(result => {
-            let newMarkers = [...markers];
-            newMarkers[i].id = Number(result);
-            newMarkers[i].subject = subject;
-            newMarkers[i].description = description;
-            dispatch(setMarkers(newMarkers));
-          }).catch(err => alert(err))
+        dispatch(showSpinner());
+        if (dbIndex) {
+          // Marker already has an associated database id: wanted action is update
+          updateReport({ id: dbIndex, subject, description })
+            .then(() => {
+              dispatch(
+                setSnackbar({
+                  message: 'Report updated.',
+                  open: true,
+                  severity: 'success'
+                })
+              );
+            })
+            .catch((err) =>
+              dispatch(
+                setSnackbar({
+                  message: err.message,
+                  open: true,
+                  severity: 'error'
+                })
+              )
+            )
+            .finally(() => dispatch(hideSpinner()));
+        } else {
+          // Marker has no existing database id: wanted action is insert
+          insertReport({
+            subject,
+            description,
+            latitude,
+            longitude,
+            city,
+            postcode,
+            address,
+            reporter
+          })
+            .then((result) => {
+              let newMarkers = [...markers];
+              newMarkers[i].id = Number(result);
+              newMarkers[i].subject = subject;
+              newMarkers[i].description = description;
+              dispatch(setMarkers(newMarkers));
+              dispatch(
+                setSnackbar({
+                  message: 'Report posted.',
+                  open: true,
+                  severity: 'success'
+                })
+              );
+            })
+            .catch((err) =>
+              dispatch(
+                setSnackbar({
+                  message: err.message,
+                  open: true,
+                  severity: 'error'
+                })
+              )
+            )
+            .finally(() => dispatch(hideSpinner()));
         }
         return { ...marker, subject, description };
       } else return marker;

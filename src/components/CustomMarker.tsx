@@ -2,7 +2,7 @@ import React from 'react';
 import { Marker } from 'react-map-gl';
 import MarkerIcon from '@material-ui/icons/Room';
 import { useSelector, useDispatch } from 'react-redux';
-import { openDialog, setDialogContent, setMarkers } from '../actions';
+import { openDialog, setDialogContent, setMarkers, setSnackbar, showSpinner, hideSpinner } from '../actions';
 import { deleteReport } from '../utils/fetch';
 import { RootState } from '../reducers';
 import { Marker as IMarker, CustomMarkerProps } from '../types';
@@ -28,7 +28,7 @@ function CustomMarker(props: CustomMarkerProps) {
   const dispatch = useDispatch();
 
   const handleClick = () => {
-    function updateMarkersLocally() {
+    function deleteMarkerLocally() {
       const newMarkers = markers.filter((marker: IMarker, i: number) =>
         i === localIndex ? false : true
       );
@@ -36,13 +36,38 @@ function CustomMarker(props: CustomMarkerProps) {
     }
 
     if (tool === 'delete') {
-      if (!dbIndex) return updateMarkersLocally();
-      if (reporter !== 'guest') // TODO: implement authentication (e.g. AWS Cognito)
-        return alert('Not authorized as guest to delete a report posted by admin.');
+      if (!dbIndex) return deleteMarkerLocally();
+      // TODO: implement authentication (e.g. AWS Cognito)
+      if (reporter !== 'guest')
+        return dispatch(
+          setSnackbar({
+            message: 'Not authorized as guest to delete a report posted by admin.',
+            open: true,
+            severity: 'warning'
+          })
+        );
       if (window.confirm('Delete this report?')) {
+        dispatch(showSpinner())
         deleteReport({ id: dbIndex })
-          .then(() => updateMarkersLocally())
-          .catch((err) => alert(err));
+          .then(() => {
+            deleteMarkerLocally();
+            dispatch(
+              setSnackbar({
+                message: 'Report deleted.',
+                open: true,
+                severity: 'success'
+              })
+            )
+          })
+          .catch((err) =>
+            dispatch(
+              setSnackbar({
+                message: err.message,
+                open: true,
+                severity: 'error'
+              })
+            )
+          ).finally(() => dispatch(hideSpinner()))
       }
     } else {
       dispatch(

@@ -17,14 +17,14 @@ export interface ReportBase {
   postcode: string;
   subject: string;
   reporter: string;
-};
+}
 
 export interface Marker extends ReportBase {
   id: number | null;
-};
+}
 
 export interface CustomMarkerProps extends ReportBase {
-  dbIndex: number | null;  
+  dbIndex: number | null;
   localIndex: number;
   offsetLeft?: number;
   offsetTop?: number;
@@ -32,7 +32,13 @@ export interface CustomMarkerProps extends ReportBase {
 
 export interface DialogContent extends ReportBase {
   markerIndex: number;
-};
+}
+
+export interface Snackbar {
+  message: string;
+  open: boolean;
+  severity: 'success' | 'info' | 'warning' | 'error' | undefined;
+}
 
 export interface Viewport {
   longitude: number;
@@ -40,7 +46,7 @@ export interface Viewport {
   zoom: number;
   bearing: number;
   pitch: number;
-};
+}
 
 export type ReportBodyInsert = ReportBase;
 
@@ -48,24 +54,24 @@ export interface ReportBodyUpdate {
   id: number;
   subject: string;
   description: string;
-};
+}
 
 export interface ReportBodyDelete {
   id: number;
   userToken?: string;
-};
+}
 
 interface QueryResultMessage {
   result: string;
-};
+}
 
 export interface QueryGetResult {
   recordset: Marker[];
-};
+}
 
 export interface QuerySetResult {
   recordset: QueryResultMessage[];
-};
+}
 
 export interface GeoJSONFeature {
   bbox: number[];
@@ -87,11 +93,11 @@ export interface GeoJSONFeature {
   relevance: number;
   text: string;
   type: string;
-};
+}
 
 export interface GeoJSONFeatureCollection {
   attribution: string;
   type: string;
   query: number[];
   features: GeoJSONFeature[];
-};
+}

@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import ToolDrawer from './components/ToolDrawer';
 import MapGL from 'react-map-gl';
 import CustomAppBar from './components/CustomAppBar';
 import CustomDialog from './components/CustomDialog';
 import CustomMarker from './components/CustomMarker';
+import CustomSnackbar from './components/CustomSnackbar';
 import { useSelector, useDispatch } from 'react-redux';
-import { setViewport, setMarkers } from './actions';
-import { getAllReports, reverseGeocode } from './utils/fetch';
+import { setViewport, setMarkers, setSnackbar, hideSpinner } from './actions';
+import { getAllReports } from './utils/fetch';
+import { addNewMarkerLocally } from './utils/markers';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import './App.css';
 import { makeStyles, ThemeOptions } from '@material-ui/core/styles';
@@ -52,10 +55,21 @@ function App() {
   const markers = useSelector((state: RootState) => state.markers);
   const viewport = useSelector((state: RootState) => state.viewport);
   const tool = useSelector((state: RootState) => state.tool);
+  const spinner = useSelector((state: RootState) => state.spinner);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getAllReports().then((reports) => dispatch(setMarkers(reports)));
+    getAllReports()
+      .then((reports) => dispatch(setMarkers(reports)))
+      .catch((err) =>
+        dispatch(
+          setSnackbar({
+            message: err.message,
+            open: true,
+            severity: 'warning'
+          })
+        )
+      ).finally(() => dispatch(hideSpinner()));
   }, [dispatch]);
 
   const handleViewportChange = (viewport: Viewport) => dispatch(setViewport(viewport));
@@ -63,34 +77,7 @@ function App() {
     if (tool === 'add') {
       // Prioritize edit over add on existing markers
       if (e.target.tagName !== 'DIV') return;
-
-      reverseGeocode(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.lngLat[0]},${e.lngLat[1]}.json?access_token=${MAPBOX_TOKEN}`
-      )
-        .then((res) => {
-          const { city, address = '---', postcode = '---', region, country } = res;
-          if (country !== 'Finland')
-            return alert(
-              `This app is currently restricted to Finland only. Marker location: ${region}, ${country}`
-            );
-
-          if (!city) return alert('Marker is not located near a city with infrastructure.');
-
-          const newMarker: Marker = {
-            address,
-            city,
-            description: `${address}, ${postcode}, ${city}`,
-            id: null,
-            latitude: e.lngLat[1],
-            longitude: e.lngLat[0],
-            postcode,
-            reporter: 'guest',
-            subject: 'New marker'
-          };
-
-          dispatch(setMarkers([...markers, newMarker]));
-        })
-        .catch((err) => alert(err));
+      addNewMarkerLocally(e.lngLat[0], e.lngLat[1], markers, dispatch);
     }
   };
 
@@ -114,7 +101,7 @@ function App() {
             mapboxApiAccessToken={MAPBOX_TOKEN}
             onMouseDown={handleClick}
           >
-            {React.useMemo(
+            {useMemo(
               () =>
                 markers.map((m: Marker, i: number) => (
                   <CustomMarker
@@ -136,7 +123,10 @@ function App() {
               [markers]
             )}
           </MapGL>
-          <CustomDialog />
+          {/* Only rerender when component's state via useSelector changes */}
+          {useMemo(() => <CustomDialog />, [])}
+          {useMemo(() => <CustomSnackbar />, [])}
+          {spinner && <CircularProgress color="secondary" style={{position: 'absolute', left: '50%', top: '50%', marginLeft: '-20px', marginTop: '-20px'}} />}
         </main>
       </div>
     </ThemeProvider>
