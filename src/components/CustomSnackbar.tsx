@@ -13,7 +13,7 @@ export default function CustomSnackbar() {
   const { message, open, severity } = useSelector((state: RootState) => state.snackbar);
   const dispatch = useDispatch();
 
-  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+  const handleClose = (e?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') return;
     dispatch(
       setSnackbar({

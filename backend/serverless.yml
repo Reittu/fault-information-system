@@ -7,6 +7,14 @@ provider:
   runtime: nodejs12.x
   profile: default
   stage: prod
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "ec2:CreateNetworkInterface"
+        - "ec2:DescribeNetworkInterfaces"
+        - "ec2:DetachNetworkInterface"
+        - "ec2:DeleteNetworkInterface"
+      Resource: "*"
   environment:
     DBUSER: ${file(./db.env.json):DBUSER}
     DBPASS: ${file(./db.env.json):DBPASS}

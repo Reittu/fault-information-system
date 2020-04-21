@@ -139,7 +139,7 @@ export default function CustomDialog() {
         <Box color="text.secondary" mb="16px">
           <Box mb="8px">
             <Typography color="textSecondary" display="inline">
-              Reported by:{' '}
+              Reported by: 
             </Typography>
             <Typography color="primary" display="inline">
               {dialogContent.reporter}

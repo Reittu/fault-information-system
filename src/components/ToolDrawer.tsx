@@ -71,7 +71,7 @@ export default function ToolDrawer() {
             }}
         >
             <div className={classes.toolbar}>
-                <IconButton onClick={() => dispatch(closeDrawer())}>
+                <IconButton onClick={() => dispatch(closeDrawer())} data-testid='drawer-button'>
                     {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                 </IconButton>
             </div>
