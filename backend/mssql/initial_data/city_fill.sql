@@ -1,7 +1,8 @@
-let data = `...`.split(/\n/g).map( x => x.trim().split(/(?<=[a-zA-ZöäåÖÄÅ])\s+(?=[a-zA-ZöäåÖÄÅ])/));
-let result;
-data.forEach( x => result += `INSERT INTO City(Region_id, Name) VALUES ((SELECT id FROM Region WHERE name='${x[1]}'),'${x[0]}')` + '\n');
-console.log(result);
+-- // Converting data (CSV) to queries with JavaScript
+-- let data = `...`.split(/\n/g).map( x => x.trim().split(/(?<=[a-zA-ZöäåÖÄÅ])\s+(?=[a-zA-ZöäåÖÄÅ])/));
+-- let result;
+-- data.forEach( x => result += `INSERT INTO City(Region_id, Name) VALUES ((SELECT id FROM Region WHERE name='${x[1]}'),'${x[0]}')` + '\n');
+-- console.log(result);
 
 INSERT INTO City(Region_id, Name) VALUES ((SELECT id FROM Region WHERE name='Pirkanmaa'),'Tampere')
 INSERT INTO City(Region_id, Name) VALUES ((SELECT id FROM Region WHERE name='Varsinais-Suomi'),'Turku')
