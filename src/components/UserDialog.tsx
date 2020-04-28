@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react';
+import React, { useState, SyntheticEvent } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -44,6 +44,14 @@ export default function UserDialog() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const userDialog = useSelector((state: RootState) => state.userDialog);
+
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [registerName, setRegisterName] = useState('');
+  const [registerUsername, setRegisterUsername] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [forgotEmail, setForgotEmail] = useState('');
 
   // At least one number, lower case, upper case and a special character. Min length 8, max 255.
   const passwordValidator = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$^*.[\]{}()?'"!@#%&/\\,><:;|_~`]).{8,255}/;
@@ -94,29 +102,33 @@ export default function UserDialog() {
       <Typography component="h1" variant="h5">
         Sign up
       </Typography>
-      <form className={classes.form} onSubmit={handleRegister}>
+      <form id="register-form" className={classes.form} onSubmit={handleRegister} autoComplete="off">
         <TextField
           variant="outlined"
           margin="normal"
           required
           fullWidth
-          id="name"
           label="Full Name"
           name="name"
-          autoComplete="name"
+          id="register-name"
           autoFocus
+          autoComplete="name"
           inputProps={{ minLength: 5, maxLength: 70 }}
+          value={registerName}
+          onChange={(e) => setRegisterName(e.target.value)}
         />
         <TextField
           variant="outlined"
           margin="normal"
           required
           fullWidth
-          id="username"
           label="Username"
           name="username"
+          id="register-username"
           autoComplete="username"
           inputProps={{ minLength: 3, maxLength: 50 }}
+          value={registerUsername}
+          onChange={(e) => setRegisterUsername(e.target.value)}
         />
         <TextField
           variant="outlined"
@@ -126,9 +138,11 @@ export default function UserDialog() {
           name="email"
           label="Email Address"
           type="email"
-          id="email"
+          id="register-email"
           autoComplete="email"
           inputProps={{ minLength: 5, maxLength: 255 }}
+          value={registerEmail}
+          onChange={(e) => setRegisterEmail(e.target.value)}
         />
         <TextField
           variant="outlined"
@@ -138,9 +152,11 @@ export default function UserDialog() {
           name="password"
           label="Password"
           type="password"
-          id="password"
-          autoComplete="current-password"
+          id="register-password"
+          autoComplete="new-password"
           inputProps={{ pattern: pwPattern, title: invalidPwMessage }}
+          value={registerPassword}
+          onChange={(e) => setRegisterPassword(e.target.value)}
         />
         <Button
           type="submit"
@@ -173,7 +189,7 @@ export default function UserDialog() {
       <Typography component="h1" variant="h5">
         Sign in
       </Typography>
-      <form className={classes.form} onSubmit={handleLogin}>
+      <form id="login-form" className={classes.form} onSubmit={handleLogin}>
         <TextField
           variant="outlined"
           margin="normal"
@@ -181,10 +197,12 @@ export default function UserDialog() {
           fullWidth
           name="username"
           label="Username"
-          id="username"
+          id="login-username"
           autoComplete="username"
           autoFocus
           inputProps={{ minLength: 3, maxLength: 50 }}
+          value={loginUsername}
+          onChange={(e) => setLoginUsername(e.target.value)}
         />
         <TextField
           variant="outlined"
@@ -194,9 +212,11 @@ export default function UserDialog() {
           name="password"
           label="Password"
           type="password"
-          id="password"
+          id="login-password"
           autoComplete="current-password"
           inputProps={{ pattern: pwPattern, title: invalidPwMessage }}
+          value={loginPassword}
+          onChange={(e) => setLoginPassword(e.target.value)}
         />
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
@@ -261,7 +281,7 @@ export default function UserDialog() {
       <Typography component="h1" variant="h5">
         Placeholder for forgot password
       </Typography>
-      <form className={classes.form} onSubmit={handleForgot}>
+      <form id="forgot-form" className={classes.form} onSubmit={handleForgot}>
         <TextField
           variant="outlined"
           margin="normal"
@@ -270,9 +290,11 @@ export default function UserDialog() {
           name="email"
           label="Email Address"
           type="email"
-          id="email"
+          id="forgot-email"
           autoComplete="email"
           autoFocus
+          value={forgotEmail}
+          onChange={(e) => setForgotEmail(e.target.value)}
         />
         <Button
           type="submit"
