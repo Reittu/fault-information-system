@@ -2,14 +2,14 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import store from '../../store';
 import { render, cleanup } from '@testing-library/react';
-import CustomDialog from '../CustomDialog';
+import ReportDialog from '../ReportDialog';
 
 afterEach(cleanup);
 
 const renderComponent = () =>
   render(
     <Provider store={store}>
-      <CustomDialog />
+      <ReportDialog />
     </Provider>
   );
 

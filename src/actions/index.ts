@@ -1,10 +1,8 @@
 import { Action } from 'redux';
-import { DialogContent, Marker, Tool, Viewport, PayloadAction, Snackbar } from '../types';
+import { ReportDialog, UserDialog, Marker, Tool, Viewport, PayloadAction, Snackbar } from '../types';
 
 export const openDrawer = (): Action => ({ type: 'OPEN-DRAWER' });
 export const closeDrawer = (): Action => ({ type: 'CLOSE-DRAWER' });
-export const openDialog = (): Action => ({ type: 'OPEN-DIALOG' });
-export const closeDialog = (): Action => ({ type: 'CLOSE-DIALOG' });
 export const showSpinner = (): Action => ({ type: 'SHOW-SPINNER' });
 export const hideSpinner = (): Action => ({ type: 'HIDE-SPINNER' });
 
@@ -22,23 +20,30 @@ export const setViewport = (payload: Viewport): PayloadAction<Viewport> => {
     }
 };
 
-export const setDialogContent = (payload: DialogContent): PayloadAction<DialogContent> => {
+export const setReportDialog = (payload: ReportDialog): PayloadAction<ReportDialog> => {
     return {
-        type: 'SET-DIALOG',
+        type: 'REPORT-DIALOG',
+        payload
+    }
+};
+
+export const setUserDialog = (payload: UserDialog): PayloadAction<UserDialog> => {
+    return {
+        type: 'USER-DIALOG',
         payload
     }
 };
 
 export const setMarkers = (payload: Marker[]): PayloadAction<Marker[]> => {
     return {
-        type: 'SET-MARKERS',
+        type: 'MARKERS',
         payload
     }
 };
 
 export const setSnackbar = (payload: Snackbar): PayloadAction<Snackbar> => {
     return {
-        type: 'SET-SNACKBAR',
+        type: 'SNACKBAR',
         payload
     }
 };

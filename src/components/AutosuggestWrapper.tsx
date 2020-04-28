@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField, makeStyles } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,6 +9,38 @@ import { GeoJSONFeature, GeoJSONFeatureCollection } from '../types';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 let debounceTimer: number;
+
+const useStyles = makeStyles(() => ({
+  searchIcon: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translate(50%, -50%)'
+  },
+  autosuggest: {
+    '& .MuiFormControl-root': {
+      margin: '0 0 0 5px'
+    },
+    '& .MuiInputBase-root': {
+      paddingTop: 0,
+      paddingBottom: 0
+    },
+    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#fff'
+    },
+    '& .MuiAutocomplete-inputRoot': {
+      paddingLeft: '32px',
+      color: '#fff'
+    },
+    '& .MuiInputLabel-root': {
+      transform: 'translate(36px, 12px) scale(1)',
+      padding: 0,
+      color: '#fff'
+    },
+    '& .MuiInputLabel-shrink': {
+      transform: 'translate(14px, -6px) scale(0.75)'
+    },
+  }
+}));
 
 const getSuggestions = async (value: string) => {
   const inputValue = value.trim().toLowerCase();
@@ -27,6 +59,7 @@ async function queryPlaces(query: string) {
 }
 
 function AutosuggestWrapper() {
+  const classes = useStyles();
   const [suggestions, setSuggestions] = useState<GeoJSONFeature[]>([]);
   const [value, setValue] = useState('');
 
@@ -42,11 +75,11 @@ function AutosuggestWrapper() {
   }, [value]);
 
   return (
-    <div style={{ alignItems: 'center', display: 'flex' }}>
-      <SearchIcon />
+    <>
+      <SearchIcon className={classes.searchIcon} />
       <Autocomplete
+        className={classes.autosuggest}
         freeSolo
-        style={{ flex: 1 }}
         onInputChange={(event, newValue) => setValue(newValue)}
         options={suggestions}
         renderInput={(params) => (
@@ -77,7 +110,7 @@ function AutosuggestWrapper() {
           );
         }}
       />
-    </div>
+    </>
   );
 }
 

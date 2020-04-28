@@ -2,7 +2,8 @@ import React, { useEffect, useMemo } from 'react';
 import ToolDrawer from './components/ToolDrawer';
 import MapGL from 'react-map-gl';
 import CustomAppBar from './components/CustomAppBar';
-import CustomDialog from './components/CustomDialog';
+import ReportDialog from './components/ReportDialog';
+import UserDialog from './components/UserDialog';
 import CustomMarker from './components/CustomMarker';
 import CustomSnackbar from './components/CustomSnackbar';
 import { useSelector, useDispatch } from 'react-redux';
@@ -124,7 +125,8 @@ function App() {
             )}
           </MapGL>
           {/* Only rerender when component's state via useSelector changes */}
-          {useMemo(() => <CustomDialog />, [])}
+          {useMemo(() => <ReportDialog />, [])}
+          {useMemo(() => <UserDialog />, [])}
           {useMemo(() => <CustomSnackbar />, [])}
           {spinner && <CircularProgress color="secondary" style={{position: 'absolute', left: '50%', top: '50%', marginLeft: '-20px', marginTop: '-20px'}} />}
         </main>

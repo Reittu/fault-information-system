@@ -1,19 +1,29 @@
 CREATE PROCEDURE dbo.uspUpdateReport 
-  @pReportID       INT,
-  @pUserID         INT,
-  @pSubject        NVARCHAR(50), 
-  @pDescription    NVARCHAR(500),
-  @responseMessage NVARCHAR(250) OUTPUT 
-AS 
-  BEGIN 
-    SET nocount ON 
-    BEGIN TRY 
-      UPDATE Report 
-      SET subject = @pSubject, description = @pDescription
-      WHERE id = @pReportID AND reporter_id = @pUserID
-      SET @responseMessage='Success'
-    END try 
-    BEGIN catch 
-      SET @responseMessage=error_message() 
-    END catch 
-  END
+@pReportID int,
+@pUsername nvarchar(50),
+@pSubject nvarchar(50),
+@pDescription nvarchar(500),
+@responseMessage nvarchar(250) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	DECLARE @ReporterID int = (SELECT TOP 1 id FROM reporter WHERE username = @pUsername)
+  
+	IF @ReporterID IS NULL
+		SET @responseMessage = 'This reporter does not exist'
+	ELSE
+    BEGIN TRY
+      UPDATE report
+      SET	subject = @pSubject,
+          description = @pDescription
+      WHERE id = @pReportID
+      AND reporter_id = @ReporterID
+
+      SET @responseMessage = 'Success'
+    END TRY
+
+    BEGIN CATCH
+      SET @responseMessage = ERROR_MESSAGE()
+    END CATCH
+END

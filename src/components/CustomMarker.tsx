@@ -2,7 +2,7 @@ import React from 'react';
 import { Marker } from 'react-map-gl';
 import MarkerIcon from '@material-ui/icons/Room';
 import { useSelector, useDispatch } from 'react-redux';
-import { openDialog, setDialogContent, setMarkers, setSnackbar, showSpinner, hideSpinner } from '../actions';
+import { setReportDialog, setMarkers, setSnackbar, showSpinner, hideSpinner } from '../actions';
 import { deleteReport } from '../utils/fetch';
 import { RootState } from '../reducers';
 import { Marker as IMarker, CustomMarkerProps } from '../types';
@@ -71,7 +71,7 @@ function CustomMarker(props: CustomMarkerProps) {
       }
     } else {
       dispatch(
-        setDialogContent({
+        setReportDialog({
           address: address || '---',
           city: city || '---',
           postcode: postcode || '---',
@@ -80,10 +80,10 @@ function CustomMarker(props: CustomMarkerProps) {
           reporter,
           markerIndex: localIndex,
           latitude,
-          longitude
+          longitude,
+          open: true
         })
       );
-      dispatch(openDialog());
     }
   };
 

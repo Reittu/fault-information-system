@@ -1,66 +1,26 @@
-CREATE PROCEDURE dbo.uspAddReport 
-  @pUserID         INT,
-  @pLatitude       DECIMAL(8,6), 
-  @pLongitude      DECIMAL(9,6), 
-  @pSubject        NVARCHAR(50), 
-  @pDescription    NVARCHAR(500), 
-  @pCity           NVARCHAR(200), 
-  @pPostcode       VARCHAR(15), 
-  @pAddress        NVARCHAR(255), 
-  @responseMessage NVARCHAR(250) OUTPUT 
-AS 
-  BEGIN 
-    SET nocount ON 
-    BEGIN TRY 
-      DECLARE @INSERTED TABLE 
-                  ( 
-                              id int 
-                  ); 
-       
-      INSERT INTO Location 
-                  ( 
-                              city_id, 
-                              latitude, 
-                              longitude, 
-                              postcode, 
-                              address 
-                  ) 
-                  OUTPUT inserted.id 
-      INTO        @inserted VALUES 
-                  ( 
-                  ( 
-                         SELECT TOP 1 
-                                id 
-                         FROM   city 
-                         WHERE  NAME = @pCity 
-                  ) 
-                  , 
-                  @pLatitude, 
-                  @pLongitude, 
-                  @pPostcode, 
-                  @pAddress 
-                  ); 
-       
-      INSERT INTO Report 
-                  ( 
-                              reporter_id, 
-                              location_id, 
-                              subject, 
-                              description 
-                  ) 
-                  VALUES 
-                  ( 
-                              @pUserID, 
-                              ( 
-                                     SELECT TOP 1 id 
-                                     FROM   @inserted), 
-                              @pSubject, 
-                              @pDescription 
-                  ); 
-       
-      SET @responseMessage=SCOPE_IDENTITY()
-    END TRY 
-    BEGIN CATCH 
-      SET @responseMessage=error_message() 
-    END CATCH 
-  END
+CREATE PROCEDURE dbo.uspDeleteReport 
+@pReportID int,
+@pUsername nvarchar(50),
+@responseMessage nvarchar(250) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON
+	BEGIN TRY
+		DECLARE @ReporterID int = (SELECT TOP 1 id FROM Reporter WHERE username = @pUsername)
+		IF @ReporterID IS NULL
+			SET @responseMessage = 'This reporter does not exist'
+		ELSE
+		IF (SELECT TOP 1 reporter_id FROM Report WHERE id = @pReportID) = @ReporterID
+		BEGIN
+			DECLARE @locationID int = (SELECT TOP 1 location_id FROM Report WHERE id = @pReportID); -- Could also cascade delete
+			DELETE FROM Report WHERE id = @pReportID;
+			DELETE FROM Location WHERE id = @locationID;
+			SET @responseMessage = 'Success'
+		END
+		ELSE
+			SET @responseMessage = 'Not permitted to delete this record'
+	END TRY
+	BEGIN CATCH
+		SET @responseMessage = ERROR_MESSAGE()
+	END CATCH
+END

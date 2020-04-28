@@ -1,8 +1,9 @@
 DECLARE @responseMessage NVARCHAR(250)
 
 EXEC dbo.uspAddUser
-          @pLogin = N'Another',
-          @pPassword = N'123',
+          @pUsername N'Another',
+          @pName 'Example Name',
+          @pEmail 'example@email.com',
           @responseMessage=@responseMessage OUTPUT
 
 SELECT	@responseMessage as N'result'

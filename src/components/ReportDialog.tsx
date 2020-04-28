@@ -8,14 +8,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import { useSelector, useDispatch } from 'react-redux';
-import { closeDialog, setMarkers, setSnackbar, showSpinner, hideSpinner } from '../actions';
+import { setMarkers, setSnackbar, showSpinner, hideSpinner, setReportDialog } from '../actions';
 import { insertReport, updateReport } from '../utils/fetch';
 import { Marker } from '../types';
 import { RootState } from '../reducers';
 
-export default function CustomDialog() {
-  const dialogIsOpen = useSelector((state: RootState) => state.dialogIsOpen);
-  const dialogContent = useSelector((state: RootState) => state.dialogContent);
+export default function ReportDialog() {
+  const reportDialog = useSelector((state: RootState) => state.reportDialog);
   const tool = useSelector((state: RootState) => state.tool);
   const markers = useSelector((state: RootState) => state.markers);
   const [subject, setSubject] = useState('');
@@ -24,10 +23,10 @@ export default function CustomDialog() {
   const editForm = useRef<HTMLFormElement>(null);
 
   const handleSetup = () => {
-    setSubject(dialogContent.subject);
-    setDescription(dialogContent.description);
+    setSubject(reportDialog.subject);
+    setDescription(reportDialog.description);
   };
-  const handleClose = () => dispatch(closeDialog());
+  const handleClose = () => dispatch(setReportDialog({...reportDialog, open: false}));
 
   const requestSubmit = () => {
     editForm.current?.requestSubmit(); // Validate form and submit
@@ -38,7 +37,7 @@ export default function CustomDialog() {
 
     const newMarkers = markers.map((marker: Marker, i: number) => {
       // Find the marker that initiated the edit dialog
-      if (i === dialogContent.markerIndex) {
+      if (i === reportDialog.markerIndex) {
         const { latitude, longitude, city, postcode, address, reporter, id: dbIndex } = marker;
         dispatch(showSpinner());
         if (dbIndex) {
@@ -116,15 +115,15 @@ export default function CustomDialog() {
           <Box mb="16px">
             <Typography display="inline">Reported by: </Typography>
             <Typography display="inline" color="primary">
-              {dialogContent.reporter}
+              {reportDialog.reporter}
             </Typography>
           </Box>
           <Box mb="16px">
             <Typography>
-              {dialogContent.address}, {dialogContent.postcode}, {dialogContent.city}
+              {reportDialog.address}, {reportDialog.postcode}, {reportDialog.city}
             </Typography>
-            <Typography>Latitude: {dialogContent.latitude}</Typography>
-            <Typography>Longitude: {dialogContent.longitude}</Typography>
+            <Typography>Latitude: {reportDialog.latitude}</Typography>
+            <Typography>Longitude: {reportDialog.longitude}</Typography>
           </Box>
           <Typography color="textPrimary">{description}</Typography>
         </Box>
@@ -142,7 +141,7 @@ export default function CustomDialog() {
               Reported by: 
             </Typography>
             <Typography color="primary" display="inline">
-              {dialogContent.reporter}
+              {reportDialog.reporter}
             </Typography>
           </Box>
           <Typography>
@@ -151,7 +150,7 @@ export default function CustomDialog() {
         </Box>
         <form ref={editForm} onSubmit={handleSubmit}>
           <fieldset
-            disabled={dialogContent.reporter !== 'guest' ? true : false}
+            disabled={reportDialog.reporter !== 'guest' ? true : false}
             style={{ all: 'unset' }}
           >
             <TextField
@@ -190,7 +189,7 @@ export default function CustomDialog() {
         <Button
           onClick={requestSubmit}
           color="primary"
-          disabled={dialogContent.reporter !== 'guest' ? true : false}
+          disabled={reportDialog.reporter !== 'guest' ? true : false}
         >
           Save
         </Button>
@@ -201,7 +200,7 @@ export default function CustomDialog() {
   return (
     <Dialog
       onEnter={handleSetup}
-      open={dialogIsOpen}
+      open={reportDialog.open}
       onClose={() => handleClose()}
       aria-labelledby="form-dialog-title"
     >

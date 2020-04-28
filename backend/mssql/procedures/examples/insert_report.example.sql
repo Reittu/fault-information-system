@@ -1,7 +1,7 @@
 DECLARE @responseMessage NVARCHAR(250)
 
 EXEC dbo.uspAddReport
-		  @pUserID = 2,
+		  @pUsername = N'guest',
           @pLatitude = 61.3056512,
           @pLongitude = 23.740416,
 		  @pSubject = N'Example location',

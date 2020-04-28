@@ -30,8 +30,14 @@ export interface CustomMarkerProps extends ReportBase {
   offsetTop?: number;
 }
 
-export interface DialogContent extends ReportBase {
+export interface ReportDialog extends ReportBase {
+  open: boolean;
   markerIndex: number;
+}
+
+export interface UserDialog {
+  open: boolean;
+  mode: 'register' | 'login' | 'logout' | 'forgot'
 }
 
 export interface Snackbar {

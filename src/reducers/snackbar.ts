@@ -7,7 +7,7 @@ const snackbarReducer = (
   action: PayloadAction<Snackbar>
 ): Snackbar => {
   switch (action.type) {
-    case 'SET-SNACKBAR':
+    case 'SNACKBAR':
       return action.payload;
     default:
       return state;

@@ -1,18 +1,7 @@
-import { Action } from 'redux';
-import { DialogContent, PayloadAction } from '../types';
+import { ReportDialog, UserDialog, PayloadAction } from '../types';
 
-export const dialogStateReducer = (state: boolean = false, action: Action): boolean => {
-  switch (action.type) {
-    case 'OPEN-DIALOG':
-      return true;
-    case 'CLOSE-DIALOG':
-      return false;
-    default:
-      return state;
-  }
-};
-
-const initialState: DialogContent = {
+const reportDialogInitialState: ReportDialog = {
+  open: false,
   address: '',
   city: '',
   postcode: '',
@@ -24,12 +13,29 @@ const initialState: DialogContent = {
   longitude: 0
 };
 
-export const dialogContentReducer = (
-  state = initialState,
-  action: PayloadAction<DialogContent>
-): DialogContent => {
+export const reportDialogReducer = (
+  state = reportDialogInitialState,
+  action: PayloadAction<ReportDialog>
+): ReportDialog => {
   switch (action.type) {
-    case 'SET-DIALOG':
+    case 'REPORT-DIALOG':
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+const userDialogInitialState: UserDialog = {
+  open: false,
+  mode: 'login'
+}
+
+export const userDialogReducer = (
+  state = userDialogInitialState,
+  action: PayloadAction<UserDialog>
+): UserDialog => {
+  switch (action.type) {
+    case 'USER-DIALOG':
       return action.payload;
     default:
       return state;
