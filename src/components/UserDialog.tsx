@@ -14,8 +14,9 @@ import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUserDialog } from '../actions';
+import { setUserDialog, setUser } from '../actions';
 import { RootState } from '../reducers';
+import Auth from '@aws-amplify/auth';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,6 +45,7 @@ export default function UserDialog() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const userDialog = useSelector((state: RootState) => state.userDialog);
+  const user = useSelector((state: RootState) => state.user);
 
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -51,12 +53,13 @@ export default function UserDialog() {
   const [registerUsername, setRegisterUsername] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
-  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotUsername, setForgotUsername] = useState('');
 
   // At least one number, lower case, upper case and a special character. Min length 8, max 255.
   const passwordValidator = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$^*.[\]{}()?'"!@#%&/\\,><:;|_~`]).{8,255}/;
   const pwPattern = passwordValidator.toString().slice(1, -1);
-  const invalidPwMessage = 'Password should be at least 8 characters long and have at least one lower case, upper case, special character and a number.';
+  const invalidPwMessage =
+    'Password should be at least 8 characters long and have at least one lower case, upper case, special character and a number.';
 
   const handleClose = () => dispatch(setUserDialog({ ...userDialog, open: false }));
   const switchToRegister = () => dispatch(setUserDialog({ mode: 'register', open: true }));
@@ -64,27 +67,78 @@ export default function UserDialog() {
   const switchToForgot = () => dispatch(setUserDialog({ mode: 'forgot', open: true }));
   const switchToLogout = () => dispatch(setUserDialog({ mode: 'logout', open: true }));
 
-  const handleRegister = (e: SyntheticEvent) => {
+  const handleRegister = async (e: SyntheticEvent) => {
     // TODO
     e.preventDefault();
+    try {
+      const signUpResponse = await Auth.signUp({
+        username: registerUsername,
+        password: registerPassword,
+        attributes: {
+          email: registerEmail,
+          name: registerName
+        }
+      });
+      console.log(signUpResponse);
+    } catch (err) {
+      console.log(err);
+    }
     switchToLogin();
   };
 
-  const handleLogin = (e: SyntheticEvent) => {
-    // TODO
+  const handleLogin = async (e: SyntheticEvent) => {
     e.preventDefault();
-    switchToLogout();
+    try {
+      const user = await Auth.signIn(loginUsername, loginPassword);
+      console.log(user);
+      switchToLogout();
+      dispatch(setUser(user.username));
+    } catch (err) {
+      console.log(err);
+      if (err.name === 'UserNotConfirmedException') {
+        try {
+          const code = window.prompt('Type your confirmation code: ');
+          if (!code) return;
+          await Auth.confirmSignUp(loginUsername, code);
+          console.log('Successfully confirmed user');
+          switchToLogout();
+        } catch (err) {
+          alert(err.message);
+          console.log('Error confirming sign up', err);
+        }
+      }
+    }
   };
 
-  const handleForgot = (e: SyntheticEvent) => {
-    // TODO
+  const handleForgot = async (e: SyntheticEvent) => {
     e.preventDefault();
+    try {
+      await Auth.forgotPassword(forgotUsername);
+      // Placeholder prompts before another form
+      const code = prompt('Type your confirmation code: ');
+      if (!code) return;
+      
+      const newPassword = prompt('Type a new password: ');
+      if (!newPassword || !passwordValidator.test(newPassword))
+        return alert('This password does not meet the requirements.');
+
+      await Auth.forgotPasswordSubmit(forgotUsername, code, newPassword);
+      console.log('Successfully set a new password');
+    } catch (err) {
+      alert(err.message);
+    }
     switchToLogin();
   };
 
   const handleLogout = () => {
-    // TODO
-    switchToLogin();
+    try {
+      Auth.signOut();
+      console.log('Logged out');
+      dispatch(setUser(null));
+      switchToLogin();
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const renderContent = () => {
@@ -102,7 +156,12 @@ export default function UserDialog() {
       <Typography component="h1" variant="h5">
         Sign up
       </Typography>
-      <form id="register-form" className={classes.form} onSubmit={handleRegister} autoComplete="off">
+      <form
+        id="register-form"
+        className={classes.form}
+        onSubmit={handleRegister}
+        autoComplete="off"
+      >
         <TextField
           variant="outlined"
           margin="normal"
@@ -256,7 +315,7 @@ export default function UserDialog() {
         <PermIdentityOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Welcome back, user! (ph)
+        Welcome back, <strong>{user}</strong>!
       </Typography>
       <Button
         fullWidth
@@ -287,14 +346,13 @@ export default function UserDialog() {
           margin="normal"
           required
           fullWidth
-          name="email"
-          label="Email Address"
-          type="email"
-          id="forgot-email"
-          autoComplete="email"
+          name="username"
+          label="Username"
+          type="username"
+          id="forgot-username"
           autoFocus
-          value={forgotEmail}
-          onChange={(e) => setForgotEmail(e.target.value)}
+          value={forgotUsername}
+          onChange={(e) => setForgotUsername(e.target.value)}
         />
         <Button
           type="submit"

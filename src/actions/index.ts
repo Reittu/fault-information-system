@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { ReportDialog, UserDialog, Marker, Tool, Viewport, PayloadAction, Snackbar } from '../types';
+import { ReportDialog, UserDialog, Marker, Tool, Viewport, PayloadAction, Snackbar, User } from '../types';
 
 export const openDrawer = (): Action => ({ type: 'OPEN-DRAWER' });
 export const closeDrawer = (): Action => ({ type: 'CLOSE-DRAWER' });
@@ -44,6 +44,13 @@ export const setMarkers = (payload: Marker[]): PayloadAction<Marker[]> => {
 export const setSnackbar = (payload: Snackbar): PayloadAction<Snackbar> => {
     return {
         type: 'SNACKBAR',
+        payload
+    }
+};
+
+export const setUser = (payload: User): PayloadAction<User> => {
+    return {
+        type: 'USER',
         payload
     }
 };

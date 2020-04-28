@@ -4,6 +4,7 @@ import toolReducer from './tool';
 import markerReducer from './markers';
 import snackbarReducer from './snackbar';
 import spinnerReducer from './spinner';
+import userReducer from './user';
 import { reportDialogReducer, userDialogReducer } from './dialog';
 
 import { combineReducers, Action } from 'redux';
@@ -16,7 +17,8 @@ const allReducers = combineReducers({
   snackbar: snackbarReducer,
   spinner: spinnerReducer,
   tool: toolReducer,
-  viewport: viewportReducer
+  viewport: viewportReducer,
+  user: userReducer
 });
 
 export const rootReducer = (state: any, action: Action) => {

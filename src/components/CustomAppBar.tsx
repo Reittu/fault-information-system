@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SearchAppBar() {
   const classes = useStyles();
   const drawerIsOpen = useSelector((state: RootState) => state.drawerIsOpen);
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
   return (
@@ -69,7 +70,7 @@ export default function SearchAppBar() {
           edge="end"
           aria-label="account of current user"
           aria-haspopup="true"
-          onClick={() => dispatch(setUserDialog({ open: true, mode: 'login' }))}
+          onClick={() => dispatch(setUserDialog({ open: true, mode: user === null ? 'login' : 'logout' }))}
           color="inherit"
         >
           <AccountCircle />

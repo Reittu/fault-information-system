@@ -4,6 +4,8 @@ export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export type Tool = 'add' | 'edit' | 'delete' | 'review';
 
+export type User = string | null;
+
 export interface PayloadAction<T> extends Action {
   payload: T;
 }
