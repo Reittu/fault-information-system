@@ -66,7 +66,6 @@ export interface ReportBodyUpdate {
 
 export interface ReportBodyDelete {
   id: number;
-  userToken?: string;
 }
 
 interface QueryResultMessage {

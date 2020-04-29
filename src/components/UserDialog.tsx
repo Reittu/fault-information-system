@@ -95,7 +95,7 @@ export default function UserDialog() {
           'info',
           dispatch
         );
-        setPromptDialog({ open: true, mode: 'confirm' });
+        setPromptDialog({ open: true, mode: 'verify' });
       } else snackbarMessage(err.message, 'error', dispatch);
     }
   };

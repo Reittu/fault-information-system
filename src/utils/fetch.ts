@@ -10,14 +10,29 @@ import {
 
 const API_URL = 'https://ey86blceac.execute-api.us-east-1.amazonaws.com/prod/reports';
 
+const headers = (jwtToken?: string): any => {
+  if (!jwtToken)
+    return {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+  return {
+    //credentials: 'include',
+    headers: {
+      //Authorization: 'Bearer ' + jwtToken,
+      'Content-Type': 'application/json'
+    }
+  };
+};
+
 const fetchOptions = (
   method: HTTPMethod,
+  jwtToken?: string,
   bodyData?: ReportBodyInsert | ReportBodyUpdate | ReportBodyDelete
 ) => ({
   method,
-  headers: {
-    'Content-Type': 'application/json'
-  },
+  ...headers(jwtToken),
   body: JSON.stringify(bodyData)
 });
 
@@ -25,7 +40,7 @@ const fetchBase = async (
   method: HTTPMethod,
   inputData?: ReportBodyInsert | ReportBodyUpdate | ReportBodyDelete
 ) => {
-  const result = await fetch(API_URL, fetchOptions(method, inputData));
+  const result = await fetch(API_URL, fetchOptions(method, getJwtToken(), inputData));
   const json = await result.json();
   return JSON.parse(json.body).message;
 };
@@ -72,4 +87,12 @@ export async function reverseGeocode(apiQueryUrl: string) {
   if (postcodeDataArray.length > 0) postcode = postcodeDataArray[0].text;
 
   return { city, region, country, address, postcode };
+}
+
+function getJwtToken(): string | undefined {
+  let token = null;
+  for (let i = 0; i < localStorage.length; i++) {
+    if (/accessToken$/.test(localStorage.key(i) as string)) token = localStorage[localStorage.key(i) as string];
+  }
+  return token;
 }

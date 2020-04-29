@@ -1,7 +1,7 @@
 CREATE PROCEDURE dbo.uspAddUser 
 @pUsername nvarchar(50),
 @pName nvarchar(70),
-@pEmail nvarchar(254),
+@pEmail nvarchar(255),
 @responseMessage nvarchar(250) OUTPUT
 AS
 BEGIN

@@ -2,6 +2,12 @@ const Responses = {
     _DefineResponse(statusCode = 502, data = {}) {
         return {
             statusCode,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+                'Access-Control-Allow-Credentials': true,
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(data),
         };
     },
@@ -13,6 +19,9 @@ const Responses = {
     },
     _404(data = {}) {
         return this._DefineResponse(404, data);
+    },
+    _500(data = {}) {
+        return this._DefineResponse(500, data);
     },
 };
 
