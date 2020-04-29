@@ -7,8 +7,9 @@ import UserDialog from './components/UserDialog';
 import CustomMarker from './components/CustomMarker';
 import CustomSnackbar from './components/CustomSnackbar';
 import { useSelector, useDispatch } from 'react-redux';
-import { setViewport, setMarkers, setSnackbar, hideSpinner } from './actions';
+import { setViewport, setMarkers, hideSpinner } from './actions';
 import { getAllReports } from './utils/fetch';
+import { snackbarMessage } from './utils/snackbar';
 import { addNewMarkerLocally } from './utils/markers';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -62,15 +63,8 @@ function App() {
   useEffect(() => {
     getAllReports()
       .then((reports) => dispatch(setMarkers(reports)))
-      .catch((err) =>
-        dispatch(
-          setSnackbar({
-            message: err.message,
-            open: true,
-            severity: 'warning'
-          })
-        )
-      ).finally(() => dispatch(hideSpinner()));
+      .catch((err) => snackbarMessage(err.message, 'warning', dispatch))
+      .finally(() => dispatch(hideSpinner()));
   }, [dispatch]);
 
   const handleViewportChange = (viewport: Viewport) => dispatch(setViewport(viewport));

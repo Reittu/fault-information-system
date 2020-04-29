@@ -1,4 +1,4 @@
-import React, { useState, SyntheticEvent } from 'react';
+import React, { useState, useEffect, SyntheticEvent } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -12,37 +12,17 @@ import Container from '@material-ui/core/Container';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUserDialog, setUser } from '../actions';
 import { RootState } from '../reducers';
+import { snackbarMessage } from '../utils/snackbar';
+import { passwordPattern, invalidPasswordMessage } from '../utils/validation';
+import { usePaperDialogStyles } from '../utils/dialogs';
+import PromptDialog from './PromptDialog';
 import Auth from '@aws-amplify/auth';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingBottom: '15px'
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
-}));
-
-const handleSetup = () => undefined;
-
 export default function UserDialog() {
-  const classes = useStyles();
+  const classes = usePaperDialogStyles();
   const dispatch = useDispatch();
   const userDialog = useSelector((state: RootState) => state.userDialog);
   const user = useSelector((state: RootState) => state.user);
@@ -54,12 +34,22 @@ export default function UserDialog() {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [forgotUsername, setForgotUsername] = useState('');
+  const [promptDialog, setPromptDialog] = useState({ open: false, mode: 'reset' });
 
-  // At least one number, lower case, upper case and a special character. Min length 8, max 255.
-  const passwordValidator = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$^*.[\]{}()?'"!@#%&/\\,><:;|_~`]).{8,255}/;
-  const pwPattern = passwordValidator.toString().slice(1, -1);
-  const invalidPwMessage =
-    'Password should be at least 8 characters long and have at least one lower case, upper case, special character and a number.';
+  useEffect(() => {
+    async function setUserStatus() {
+      try {
+        const session = await Auth.currentSession();
+        console.log(session);
+        const user = await Auth.currentAuthenticatedUser();
+        console.log(user);
+        dispatch(setUser(user.username));
+      } catch (err) {
+        if (err !== 'No current user') snackbarMessage(err.message, 'error', dispatch);
+      }
+    }
+    setUserStatus();
+  }, [dispatch]);
 
   const handleClose = () => dispatch(setUserDialog({ ...userDialog, open: false }));
   const switchToRegister = () => dispatch(setUserDialog({ mode: 'register', open: true }));
@@ -68,7 +58,6 @@ export default function UserDialog() {
   const switchToLogout = () => dispatch(setUserDialog({ mode: 'logout', open: true }));
 
   const handleRegister = async (e: SyntheticEvent) => {
-    // TODO
     e.preventDefault();
     try {
       const signUpResponse = await Auth.signUp({
@@ -79,11 +68,16 @@ export default function UserDialog() {
           name: registerName
         }
       });
+      snackbarMessage(
+        'Successfully signed up. Check your email for verification code.',
+        'success',
+        dispatch
+      );
       console.log(signUpResponse);
+      switchToLogin();
     } catch (err) {
-      console.log(err);
+      snackbarMessage(err.message, 'error', dispatch);
     }
-    switchToLogin();
   };
 
   const handleLogin = async (e: SyntheticEvent) => {
@@ -93,20 +87,16 @@ export default function UserDialog() {
       console.log(user);
       switchToLogout();
       dispatch(setUser(user.username));
+      snackbarMessage('Successfully logged in as ' + user.username, 'success', dispatch);
     } catch (err) {
-      console.log(err);
       if (err.name === 'UserNotConfirmedException') {
-        try {
-          const code = window.prompt('Type your confirmation code: ');
-          if (!code) return;
-          await Auth.confirmSignUp(loginUsername, code);
-          console.log('Successfully confirmed user');
-          switchToLogout();
-        } catch (err) {
-          alert(err.message);
-          console.log('Error confirming sign up', err);
-        }
-      }
+        snackbarMessage(
+          'Your account needs to be confirmed. Check your email for confirmation code.',
+          'info',
+          dispatch
+        );
+        setPromptDialog({ open: true, mode: 'confirm' });
+      } else snackbarMessage(err.message, 'error', dispatch);
     }
   };
 
@@ -114,30 +104,22 @@ export default function UserDialog() {
     e.preventDefault();
     try {
       await Auth.forgotPassword(forgotUsername);
-      // Placeholder prompts before another form
-      const code = prompt('Type your confirmation code: ');
-      if (!code) return;
-      
-      const newPassword = prompt('Type a new password: ');
-      if (!newPassword || !passwordValidator.test(newPassword))
-        return alert('This password does not meet the requirements.');
-
-      await Auth.forgotPasswordSubmit(forgotUsername, code, newPassword);
-      console.log('Successfully set a new password');
+      snackbarMessage('Verification code sent to your email.', 'info', dispatch);
+      setPromptDialog({ open: true, mode: 'reset' });
     } catch (err) {
-      alert(err.message);
+      snackbarMessage(err.message, 'error', dispatch);
     }
-    switchToLogin();
   };
 
   const handleLogout = () => {
     try {
       Auth.signOut();
       console.log('Logged out');
+      snackbarMessage('Logged out successfully.', 'success', dispatch);
       dispatch(setUser(null));
       switchToLogin();
     } catch (err) {
-      alert(err.message);
+      snackbarMessage(err.message, 'error', dispatch);
     }
   };
 
@@ -213,7 +195,7 @@ export default function UserDialog() {
           type="password"
           id="register-password"
           autoComplete="new-password"
-          inputProps={{ pattern: pwPattern, title: invalidPwMessage }}
+          inputProps={{ pattern: passwordPattern, title: invalidPasswordMessage }}
           value={registerPassword}
           onChange={(e) => setRegisterPassword(e.target.value)}
         />
@@ -273,7 +255,7 @@ export default function UserDialog() {
           type="password"
           id="login-password"
           autoComplete="current-password"
-          inputProps={{ pattern: pwPattern, title: invalidPwMessage }}
+          inputProps={{ pattern: passwordPattern, title: invalidPasswordMessage }}
           value={loginPassword}
           onChange={(e) => setLoginPassword(e.target.value)}
         />
@@ -338,7 +320,7 @@ export default function UserDialog() {
         <LockOpenOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Placeholder for forgot password
+        Reset your password
       </Typography>
       <form id="forgot-form" className={classes.form} onSubmit={handleForgot}>
         <TextField
@@ -371,15 +353,18 @@ export default function UserDialog() {
   );
 
   return (
-    <Dialog
-      onEnter={handleSetup}
-      open={userDialog.open}
-      onClose={() => handleClose()}
-      aria-labelledby="form-dialog-title"
-    >
+    <Dialog open={userDialog.open} onClose={handleClose} aria-labelledby="form-dialog-title">
       <Container component="main" maxWidth="xs">
         <div className={classes.paper}>{renderContent()}</div>
       </Container>
+      <PromptDialog
+        open={promptDialog.open}
+        mode={promptDialog.mode}
+        forgotUsername={forgotUsername}
+        loginUsername={loginUsername}
+        handleClose={() => setPromptDialog({ ...promptDialog, open: false })}
+        handleSuccess={switchToLogin}
+      />
     </Dialog>
   );
 }

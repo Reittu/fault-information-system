@@ -40,7 +40,7 @@ export default function SearchAppBar() {
   const drawerIsOpen = useSelector((state: RootState) => state.drawerIsOpen);
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
-
+  
   return (
     <AppBar
       position="fixed"

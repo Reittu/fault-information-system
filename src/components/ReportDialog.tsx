@@ -8,8 +8,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import { useSelector, useDispatch } from 'react-redux';
-import { setMarkers, setSnackbar, showSpinner, hideSpinner, setReportDialog } from '../actions';
+import { setMarkers, showSpinner, hideSpinner, setReportDialog } from '../actions';
 import { insertReport, updateReport } from '../utils/fetch';
+import { snackbarMessage } from '../utils/snackbar';
 import { Marker } from '../types';
 import { RootState } from '../reducers';
 
@@ -26,7 +27,7 @@ export default function ReportDialog() {
     setSubject(reportDialog.subject);
     setDescription(reportDialog.description);
   };
-  const handleClose = () => dispatch(setReportDialog({...reportDialog, open: false}));
+  const handleClose = () => dispatch(setReportDialog({ ...reportDialog, open: false }));
 
   const requestSubmit = () => {
     editForm.current?.requestSubmit(); // Validate form and submit
@@ -43,24 +44,8 @@ export default function ReportDialog() {
         if (dbIndex) {
           // Marker already has an associated database id: wanted action is update
           updateReport({ id: dbIndex, subject, description })
-            .then(() => {
-              dispatch(
-                setSnackbar({
-                  message: 'Report updated.',
-                  open: true,
-                  severity: 'success'
-                })
-              );
-            })
-            .catch((err) =>
-              dispatch(
-                setSnackbar({
-                  message: err.message,
-                  open: true,
-                  severity: 'error'
-                })
-              )
-            )
+            .then(() => snackbarMessage('Report updated.', 'success', dispatch))
+            .catch((err) => snackbarMessage(err.message, 'error', dispatch))
             .finally(() => dispatch(hideSpinner()));
         } else {
           // Marker has no existing database id: wanted action is insert
@@ -80,23 +65,9 @@ export default function ReportDialog() {
               newMarkers[i].subject = subject;
               newMarkers[i].description = description;
               dispatch(setMarkers(newMarkers));
-              dispatch(
-                setSnackbar({
-                  message: 'Report posted.',
-                  open: true,
-                  severity: 'success'
-                })
-              );
+              snackbarMessage('Report posted.', 'success', dispatch);
             })
-            .catch((err) =>
-              dispatch(
-                setSnackbar({
-                  message: err.message,
-                  open: true,
-                  severity: 'error'
-                })
-              )
-            )
+            .catch((err) => snackbarMessage(err.message, 'error', dispatch))
             .finally(() => dispatch(hideSpinner()));
         }
         return { ...marker, subject, description };
@@ -138,7 +109,7 @@ export default function ReportDialog() {
         <Box color="text.secondary" mb="16px">
           <Box mb="8px">
             <Typography color="textSecondary" display="inline">
-              Reported by: 
+              Reported by:
             </Typography>
             <Typography color="primary" display="inline">
               {reportDialog.reporter}
@@ -175,7 +146,7 @@ export default function ReportDialog() {
               onChange={(e) => setDescription(e.target.value)}
               inputProps={{ minLength: 5, maxLength: 500 }}
               multiline={true}
-              rows="2"
+              rows="3"
               required
             />
             <input type="submit" style={{ display: 'none' }} />

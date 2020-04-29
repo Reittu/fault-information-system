@@ -18,8 +18,8 @@ export default function CustomSnackbar() {
     dispatch(
       setSnackbar({
         message,
-        open: false,
-        severity
+        severity,
+        open: false
       })
     );
   };
