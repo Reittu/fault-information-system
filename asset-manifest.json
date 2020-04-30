@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/fault-information-system/static/css/main.8953568a.chunk.css",
-    "main.js": "/fault-information-system/static/js/main.620c0540.chunk.js",
-    "main.js.map": "/fault-information-system/static/js/main.620c0540.chunk.js.map",
+    "main.js": "/fault-information-system/static/js/main.b4c6be3a.chunk.js",
+    "main.js.map": "/fault-information-system/static/js/main.b4c6be3a.chunk.js.map",
     "runtime-main.js": "/fault-information-system/static/js/runtime-main.059af64c.js",
     "runtime-main.js.map": "/fault-information-system/static/js/runtime-main.059af64c.js.map",
     "static/js/2.09935e41.chunk.js": "/fault-information-system/static/js/2.09935e41.chunk.js",
     "static/js/2.09935e41.chunk.js.map": "/fault-information-system/static/js/2.09935e41.chunk.js.map",
     "index.html": "/fault-information-system/index.html",
-    "precache-manifest.acab73054e282aba4448be1a9f222c99.js": "/fault-information-system/precache-manifest.acab73054e282aba4448be1a9f222c99.js",
+    "precache-manifest.abffb0af9a183e7ba79870b1f7f3cf00.js": "/fault-information-system/precache-manifest.abffb0af9a183e7ba79870b1f7f3cf00.js",
     "service-worker.js": "/fault-information-system/service-worker.js",
     "static/css/main.8953568a.chunk.css.map": "/fault-information-system/static/css/main.8953568a.chunk.css.map",
     "static/js/2.09935e41.chunk.js.LICENSE.txt": "/fault-information-system/static/js/2.09935e41.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.059af64c.js",
     "static/js/2.09935e41.chunk.js",
     "static/css/main.8953568a.chunk.css",
-    "static/js/main.620c0540.chunk.js"
+    "static/js/main.b4c6be3a.chunk.js"
   ]
 }
