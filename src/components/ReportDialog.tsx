@@ -18,10 +18,14 @@ export default function ReportDialog() {
   const reportDialog = useSelector((state: RootState) => state.reportDialog);
   const tool = useSelector((state: RootState) => state.tool);
   const markers = useSelector((state: RootState) => state.markers);
+  const user = useSelector((state: RootState) => state.user);
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
   const dispatch = useDispatch();
   const editForm = useRef<HTMLFormElement>(null);
+
+  const isAuthorized =
+    reportDialog.reporter === user || reportDialog.reporter === 'guest' ? true : false;
 
   const handleSetup = () => {
     setSubject(reportDialog.subject);
@@ -57,7 +61,7 @@ export default function ReportDialog() {
             city,
             postcode,
             address,
-            reporter
+            reporter,
           })
             .then((result) => {
               let newMarkers = [...markers];
@@ -86,7 +90,7 @@ export default function ReportDialog() {
           <Box mb="16px">
             <Typography display="inline">Reported by: </Typography>
             <Typography display="inline" color="primary">
-              {reportDialog.reporter}
+              {' ' + reportDialog.reporter}
             </Typography>
           </Box>
           <Box mb="16px">
@@ -109,10 +113,10 @@ export default function ReportDialog() {
         <Box color="text.secondary" mb="16px">
           <Box mb="8px">
             <Typography color="textSecondary" display="inline">
-              Reported by:
+              Reported by: 
             </Typography>
             <Typography color="primary" display="inline">
-              {reportDialog.reporter}
+              {' ' + reportDialog.reporter}
             </Typography>
           </Box>
           <Typography>
@@ -120,10 +124,7 @@ export default function ReportDialog() {
           </Typography>
         </Box>
         <form ref={editForm} onSubmit={handleSubmit}>
-          <fieldset
-            disabled={reportDialog.reporter !== 'guest' ? true : false}
-            style={{ all: 'unset' }}
-          >
+          <fieldset disabled={!isAuthorized} style={{ all: 'unset' }}>
             <TextField
               autoFocus
               margin="dense"
@@ -157,11 +158,7 @@ export default function ReportDialog() {
         <Button onClick={handleClose} color="primary">
           Cancel
         </Button>
-        <Button
-          onClick={requestSubmit}
-          color="primary"
-          disabled={reportDialog.reporter !== 'guest' ? true : false}
-        >
+        <Button onClick={requestSubmit} color="primary" disabled={!isAuthorized}>
           Save
         </Button>
       </DialogActions>

@@ -1,12 +1,13 @@
 import { reverseGeocode } from './fetch';
 import { setMarkers } from '../actions';
 import { snackbarMessage } from '../utils/snackbar';
-import { Marker } from '../types';
+import { Marker, User } from '../types';
 import { Dispatch } from 'redux';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 export const addNewMarkerLocally = (
+  user: User,
   longitude: number,
   latitude: number,
   markers: Marker[],
@@ -39,7 +40,7 @@ export const addNewMarkerLocally = (
         latitude,
         longitude,
         postcode,
-        reporter: 'guest',
+        reporter: user || 'guest',
         subject: 'New marker'
       };
 

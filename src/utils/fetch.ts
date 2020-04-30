@@ -20,7 +20,7 @@ const headers = (jwtToken?: string): any => {
   return {
     //credentials: 'include',
     headers: {
-      //Authorization: 'Bearer ' + jwtToken,
+      Authorization: 'Bearer ' + jwtToken,
       'Content-Type': 'application/json'
     }
   };

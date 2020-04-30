@@ -75,6 +75,9 @@ export default function UserDialog() {
       );
       console.log(signUpResponse);
       switchToLogin();
+      setLoginUsername(registerUsername);
+      setLoginPassword(registerPassword);
+      setPromptDialog({ open: true, mode: 'verify' });
     } catch (err) {
       snackbarMessage(err.message, 'error', dispatch);
     }
@@ -114,7 +117,6 @@ export default function UserDialog() {
   const handleLogout = () => {
     try {
       Auth.signOut();
-      console.log('Logged out');
       snackbarMessage('Logged out successfully.', 'success', dispatch);
       dispatch(setUser(null));
       switchToLogin();

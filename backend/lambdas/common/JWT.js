@@ -20,7 +20,6 @@ const verifyJwt = (token) => {
       if (err) return reject('JWT Error: ' + err);
       resolve(decoded);
     });
-
  });
 }
 

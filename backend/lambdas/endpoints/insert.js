@@ -23,8 +23,8 @@ const handler = async event => {
 
   const auth = event.headers.Authorization;
   if (auth) {
-    const [, token] = auth.split(' ');
     try {
+      const [, token] = auth.split(' ');
       const user = await verifyJwt(token);
       username = user.username;
     } catch (err) {
@@ -46,6 +46,7 @@ const handler = async event => {
         @responseMessage = @responseMessage OUTPUT
   SELECT	@responseMessage as N'result'
   `);
+
   return Responses._200({ message: data });
 };
 

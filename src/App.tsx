@@ -54,6 +54,7 @@ const useStyles = makeStyles(() => ({
 function App() {
   const muiTheme = createMuiTheme(initialTheme);
   const classes = useStyles();
+  const user = useSelector((state: RootState) => state.user);
   const markers = useSelector((state: RootState) => state.markers);
   const viewport = useSelector((state: RootState) => state.viewport);
   const tool = useSelector((state: RootState) => state.tool);
@@ -72,7 +73,7 @@ function App() {
     if (tool === 'add') {
       // Prioritize edit over add on existing markers
       if (e.target.tagName !== 'DIV') return;
-      addNewMarkerLocally(e.lngLat[0], e.lngLat[1], markers, dispatch);
+      addNewMarkerLocally(user, e.lngLat[0], e.lngLat[1], markers, dispatch);
     }
   };
 
@@ -94,7 +95,7 @@ function App() {
             mapStyle="mapbox://styles/mapbox/streets-v11"
             onViewportChange={handleViewportChange}
             mapboxApiAccessToken={MAPBOX_TOKEN}
-            onMouseDown={handleClick}
+            onNativeClick={handleClick}
           >
             {useMemo(
               () =>

@@ -66,12 +66,3 @@ functions:
           method: POST
           integration: lambda
           cors: true
-
-  cognitoNewUser:
-    handler: lambdas/triggers/cognito_insert_user.handler
-    events:
-      - http:
-          path: cognito
-          method: GET
-          integration: lambda
-          cors: true

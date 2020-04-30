@@ -26,6 +26,7 @@ function CustomMarker(props: CustomMarkerProps) {
 
   const tool = useSelector((state: RootState) => state.tool);
   const markers = useSelector((state: RootState) => state.markers);
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
   const handleClick = () => {
@@ -38,10 +39,9 @@ function CustomMarker(props: CustomMarkerProps) {
 
     if (tool === 'delete') {
       if (!dbIndex) return deleteMarkerLocally();
-      // TODO: implement authentication (e.g. AWS Cognito)
-      if (reporter !== 'guest')
+      if (reporter !== 'guest' && reporter !== user)
         return snackbarMessage(
-          'Not authorized as guest to delete a report posted by admin.',
+          'Not authorized to delete a report posted by verified user.',
           'warning',
           dispatch
         );

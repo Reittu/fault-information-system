@@ -1,15 +1,11 @@
 const { connectAndQuery, executeQuery } = require('../common/SQL');
 
-exports.handler = async (event, context, callback) => {
+exports.handler = async (event) => {
   const username = event.userName;
   const { name, email } = event.request.userAttributes;
 
-  console.log("Current data", username, name, email);
-
-  if (!username || !name || !email) return callback(null, event);
-
-  try {
-    const data = await connectAndQuery(() => executeQuery`
+  if (!username || !name || !email) return event;
+  const data = await connectAndQuery(() => executeQuery`
   DECLARE @responseMessage NVARCHAR(250)
   EXEC dbo.uspAddUser
             @pUsername = ${username},
@@ -18,10 +14,6 @@ exports.handler = async (event, context, callback) => {
             @responseMessage=@responseMessage OUTPUT
   SELECT	@responseMessage as N'result'
   `);
-    console.log("Data was: ", data);
-  } catch (error) {
-    console.log("Error occured...", error);
-  }
-
-  callback(null, event);
+  console.log(data);
+  return event;
 };
