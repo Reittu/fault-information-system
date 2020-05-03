@@ -18,6 +18,7 @@ import { RootState } from '../reducers';
 import { snackbarMessage } from '../utils/snackbar';
 import { passwordPattern, invalidPasswordMessage } from '../utils/validation';
 import { usePaperDialogStyles } from '../utils/dialogs';
+import { asyncActionLoaderWrapper } from '../utils/loading';
 import PromptDialog from './PromptDialog';
 import Auth from '@aws-amplify/auth';
 
@@ -34,6 +35,7 @@ export default function UserDialog() {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [forgotUsername, setForgotUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [promptDialog, setPromptDialog] = useState({ open: false, mode: 'reset' });
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function UserDialog() {
         console.log(user);
         dispatch(setUser(user.username));
       } catch (err) {
-        if (err !== 'No current user') snackbarMessage(err.message, 'error', dispatch);
+        if (err && err !== 'No current user') snackbarMessage(err.message, 'error', dispatch);
       }
     }
     setUserStatus();
@@ -57,16 +59,19 @@ export default function UserDialog() {
   const switchToForgot = () => dispatch(setUserDialog({ mode: 'forgot', open: true }));
   const switchToLogout = () => dispatch(setUserDialog({ mode: 'logout', open: true }));
 
-  const handleRegister = async (e: SyntheticEvent) => {
+  const handleRegister = (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
+    asyncActionLoaderWrapper(
+      setIsLoading,
+      dispatch,
+      async () => {
       const signUpResponse = await Auth.signUp({
         username: registerUsername,
         password: registerPassword,
         attributes: {
           email: registerEmail,
-          name: registerName
-        }
+          name: registerName,
+        },
       });
       snackbarMessage(
         'Successfully signed up. Check your email for verification code.',
@@ -78,20 +83,21 @@ export default function UserDialog() {
       setLoginUsername(registerUsername);
       setLoginPassword(registerPassword);
       setPromptDialog({ open: true, mode: 'verify' });
-    } catch (err) {
-      snackbarMessage(err.message, 'error', dispatch);
-    }
+    });
   };
 
   const handleLogin = async (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
+    asyncActionLoaderWrapper(
+      setIsLoading,
+      dispatch,
+      async () => {
       const user = await Auth.signIn(loginUsername, loginPassword);
       console.log(user);
       switchToLogout();
       dispatch(setUser(user.username));
       snackbarMessage('Successfully logged in as ' + user.username, 'success', dispatch);
-    } catch (err) {
+    }, (err) => {
       if (err.name === 'UserNotConfirmedException') {
         snackbarMessage(
           'Your account needs to be confirmed. Check your email for confirmation code.',
@@ -100,29 +106,31 @@ export default function UserDialog() {
         );
         setPromptDialog({ open: true, mode: 'verify' });
       } else snackbarMessage(err.message, 'error', dispatch);
-    }
+    });
   };
 
   const handleForgot = async (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
+    asyncActionLoaderWrapper(
+      setIsLoading,
+      dispatch,
+      async () => {
       await Auth.forgotPassword(forgotUsername);
       snackbarMessage('Verification code sent to your email.', 'info', dispatch);
       setPromptDialog({ open: true, mode: 'reset' });
-    } catch (err) {
-      snackbarMessage(err.message, 'error', dispatch);
-    }
+    });
   };
 
   const handleLogout = () => {
-    try {
+    asyncActionLoaderWrapper(
+      setIsLoading,
+      dispatch,
+      async () => {
       Auth.signOut();
       snackbarMessage('Logged out successfully.', 'success', dispatch);
       dispatch(setUser(null));
       switchToLogin();
-    } catch (err) {
-      snackbarMessage(err.message, 'error', dispatch);
-    }
+    });
   };
 
   const renderContent = () => {
@@ -207,6 +215,7 @@ export default function UserDialog() {
           variant="contained"
           color="primary"
           className={classes.submit}
+          disabled={isLoading}
         >
           Sign Up
         </Button>
@@ -271,6 +280,7 @@ export default function UserDialog() {
           variant="contained"
           color="primary"
           className={classes.submit}
+          disabled={isLoading}
         >
           Sign In
         </Button>
@@ -344,6 +354,7 @@ export default function UserDialog() {
           variant="contained"
           color="primary"
           className={classes.submit}
+          disabled={isLoading}
         >
           Send reset confirmation
         </Button>

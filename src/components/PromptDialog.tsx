@@ -8,6 +8,7 @@ import { usePaperDialogStyles } from '../utils/dialogs';
 import { useDispatch } from 'react-redux';
 import { passwordPattern, invalidPasswordMessage } from '../utils/validation';
 import { snackbarMessage } from '../utils/snackbar';
+import { asyncActionLoaderWrapper } from '../utils/loading';
 import Auth from '@aws-amplify/auth';
 
 export default function PromptDialog(props: any) {
@@ -16,29 +17,34 @@ export default function PromptDialog(props: any) {
   const { open, mode, forgotUsername, loginUsername, handleClose, handleSuccess } = props;
   const [verificationCode, setVerificationCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleVerifyEmail = async (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
-      await Auth.confirmSignUp(loginUsername, verificationCode);
-      snackbarMessage('Successfully confirmed user.', 'success', dispatch);
-      handleSuccess();
-      handleClose();
-    } catch (err) {
-      snackbarMessage(err.message, 'error', dispatch);
-    }
+    asyncActionLoaderWrapper(
+      setIsLoading,
+      dispatch,
+      async () => {
+        await Auth.confirmSignUp(loginUsername, verificationCode);
+        snackbarMessage('Successfully confirmed user.', 'success', dispatch);
+        handleSuccess();
+        handleClose();
+      }
+    );
   };
 
   const handleResetPassword = async (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
-      await Auth.forgotPasswordSubmit(forgotUsername, verificationCode, newPassword);
-      snackbarMessage('Successfully set a new password.', 'success', dispatch);
-      handleSuccess();
-      handleClose();
-    } catch (err) {
-      snackbarMessage(err.message, 'error', dispatch);
-    }
+    asyncActionLoaderWrapper(
+      setIsLoading,
+      dispatch,
+      async () => {
+        await Auth.forgotPasswordSubmit(forgotUsername, verificationCode, newPassword);
+        snackbarMessage('Successfully set a new password.', 'success', dispatch);
+        handleSuccess();
+        handleClose();
+      }
+    );
   };
 
   const verifyEmailContent = () => (
@@ -65,6 +71,7 @@ export default function PromptDialog(props: any) {
           variant="contained"
           color="primary"
           className={classes.submit}
+          disabled={isLoading}
         >
           Send reset confirmation
         </Button>
@@ -113,6 +120,7 @@ export default function PromptDialog(props: any) {
           variant="contained"
           color="primary"
           className={classes.submit}
+          disabled={isLoading}
         >
           Change password
         </Button>

@@ -1,6 +1,6 @@
 import { reverseGeocode } from './fetch';
 import { setMarkers } from '../actions';
-import { snackbarMessage } from '../utils/snackbar';
+import { snackbarMessage } from './snackbar';
 import { Marker, User } from '../types';
 import { Dispatch } from 'redux';
 
