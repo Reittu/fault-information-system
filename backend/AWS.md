@@ -1,8 +1,8 @@
-## Current infrastructure
+## Current architecture
 
 * MSSQL database (RDS)
 * API Gateway
-    * 4 Lambdas to interact with RDS
+    * 4 Lambdas to interact with the RDS
 * Cognito
     * Cognito trigger Lambda to update MSSQL database's user table (inside VPC as it does not need internet access; no NAT gateway for now)
 
